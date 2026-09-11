@@ -1,0 +1,12 @@
+node_modules
+Structure Files/node_modules
+
+.next
+Structure Files/.next
+
+.env
+.env.local
+dist
+build
+coverage
+*.log

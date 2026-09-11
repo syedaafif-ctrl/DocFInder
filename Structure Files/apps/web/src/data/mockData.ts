@@ -1,0 +1,818 @@
+// data/mockData.ts
+
+export type Gender = 'MALE' | 'FEMALE';
+export type DayOfWeek = 'SAT' | 'SUN' | 'MON' | 'TUE' | 'WED' | 'THU' | 'FRI';
+
+export interface Schedule {
+  day: DayOfWeek;
+  startTime: string;
+  endTime: string;
+}
+
+export interface Chamber {
+  name: string;
+  address: string;
+  area: string;
+  district: string;
+  fee: number;
+  schedule: Schedule[];
+}
+
+export interface Doctor {
+  id: string;
+  name: string;
+  title: string;
+  nameBn: string;
+  gender: Gender;
+  photo: string;
+  specialty: string;
+  specialtyBn: string;
+  specialtySlug: string;
+  bmdcNumber: string;
+  bmdcVerified: boolean;
+  qualifications: string[];
+  about: string;
+  experience: number;
+  consultationFee: number;
+  followUpFee: number;
+  telemedicineFee?: number;
+  rating: number;
+  reviewCount: number;
+  totalAppointments: number;
+  isAvailableOnline: boolean;
+  isFeatured: boolean;
+  isVerified: boolean;
+  languages: string[];
+  district: string;
+  districtSlug: string;
+  area: string;
+  chambers: Chamber[];
+  hospital: string;
+  phone: string;
+  whatsapp?: string;
+  slug: string;
+}
+
+export interface Hospital {
+  id: string;
+  name: string;
+  nameBn: string;
+  slug: string;
+  type: 'Private' | 'Government' | 'Diagnostic' | 'Clinic';
+  logo?: string;
+  address: string;
+  district: string;
+  phone: string;
+  email?: string;
+  website?: string;
+  bedCount?: number;
+  isEmergency: boolean;
+  emergencyPhone?: string;
+  rating: number;
+  reviewCount: number;
+  isVerified: boolean;
+  isFeatured: boolean;
+  specialties: string[];
+  establishedYear?: number;
+  description: string;
+}
+
+export interface Appointment {
+  id: string;
+  doctorId: string;
+  doctorName: string;
+  doctorPhoto: string;
+  specialty: string;
+  hospital: string;
+  date: string;
+  time: string;
+  status: 'UPCOMING' | 'COMPLETED' | 'CANCELLED';
+  fee: number;
+  paymentStatus: 'PAID' | 'PENDING' | 'REFUNDED';
+  appointmentNumber: string;
+  type: 'IN_PERSON' | 'TELEMEDICINE';
+}
+
+// ─────────────────────────────────────────
+// DOCTORS
+// ─────────────────────────────────────────
+
+export const MOCK_DOCTORS: Doctor[] = [
+  {
+    id: 'doc-001',
+    name: 'Aminul Islam',
+    title: 'Prof. Dr.',
+    nameBn: 'আমিনুল ইসলাম',
+    gender: 'MALE',
+    photo: 'https://api.dicebear.com/8.x/avataaars/svg?seed=aminul&backgroundColor=b6e3f4&clothingColor=3c4f5c',
+    specialty: 'Cardiology',
+    specialtyBn: 'হৃদরোগ বিশেষজ্ঞ',
+    specialtySlug: 'cardiology',
+    bmdcNumber: 'A-12345',
+    bmdcVerified: true,
+    qualifications: ['MBBS', 'MD (Cardiology)', 'FRCP (UK)'],
+    about: 'Professor Dr. Aminul Islam is a renowned cardiologist with 18 years of clinical experience specializing in interventional cardiology, coronary artery disease, and advanced heart failure management. He has trained at leading institutions in UK and USA.',
+    experience: 18,
+    consultationFee: 1500,
+    followUpFee: 800,
+    telemedicineFee: 1000,
+    rating: 4.9,
+    reviewCount: 312,
+    totalAppointments: 4820,
+    isAvailableOnline: true,
+    isFeatured: true,
+    isVerified: true,
+    languages: ['Bangla', 'English'],
+    district: 'Dhaka',
+    districtSlug: 'dhaka',
+    area: 'Farmgate',
+    hospital: 'Square Hospital Ltd.',
+    phone: '01711111111',
+    whatsapp: '01711111111',
+    slug: 'dr-aminul-islam',
+    chambers: [
+      {
+        name: "Prof. Aminul's Cardiac Centre",
+        address: '18/F, Panthapath, Dhaka-1215',
+        area: 'Farmgate',
+        district: 'Dhaka',
+        fee: 1500,
+        schedule: [
+          { day: 'SAT', startTime: '10:00', endTime: '14:00' },
+          { day: 'MON', startTime: '10:00', endTime: '14:00' },
+          { day: 'WED', startTime: '16:00', endTime: '20:00' },
+          { day: 'THU', startTime: '16:00', endTime: '20:00' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'doc-002',
+    name: 'Nasrin Akter',
+    title: 'Dr.',
+    nameBn: 'নাসরিন আক্তার',
+    gender: 'FEMALE',
+    photo: 'https://api.dicebear.com/8.x/avataaars/svg?seed=nasrin&backgroundColor=ffd5dc&clothingColor=ff6b8a',
+    specialty: 'Gynecology & Obstetrics',
+    specialtyBn: 'গাইনি বিশেষজ্ঞ',
+    specialtySlug: 'gynecology',
+    bmdcNumber: 'A-23456',
+    bmdcVerified: true,
+    qualifications: ['MBBS', 'FCPS (Gynecology)', 'MS (Gynecology)'],
+    about: 'Dr. Nasrin Akter is a highly experienced gynecologist and obstetrician. She has delivered over 5,000 babies and specializes in high-risk pregnancy management, laparoscopic surgery, and infertility treatment.',
+    experience: 15,
+    consultationFee: 1200,
+    followUpFee: 700,
+    rating: 4.8,
+    reviewCount: 198,
+    totalAppointments: 3210,
+    isAvailableOnline: false,
+    isFeatured: true,
+    isVerified: true,
+    languages: ['Bangla', 'English'],
+    district: 'Dhaka',
+    districtSlug: 'dhaka',
+    area: 'Dhanmondi',
+    hospital: 'Square Hospital Ltd.',
+    phone: '01722222222',
+    slug: 'dr-nasrin-akter',
+    chambers: [
+      {
+        name: "Dr. Nasrin's Women's Care",
+        address: 'House 16, Road 2, Dhanmondi, Dhaka-1205',
+        area: 'Dhanmondi',
+        district: 'Dhaka',
+        fee: 1200,
+        schedule: [
+          { day: 'SAT', startTime: '09:00', endTime: '13:00' },
+          { day: 'MON', startTime: '09:00', endTime: '13:00' },
+          { day: 'WED', startTime: '09:00', endTime: '13:00' },
+          { day: 'THU', startTime: '09:00', endTime: '13:00' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'doc-003',
+    name: 'Abdul Rashid',
+    title: 'Assoc. Prof. Dr.',
+    nameBn: 'আব্দুল রশিদ',
+    gender: 'MALE',
+    photo: 'https://api.dicebear.com/8.x/avataaars/svg?seed=rashid&backgroundColor=c0aede&clothingColor=5a4f8c',
+    specialty: 'Pediatrics',
+    specialtyBn: 'শিশু বিশেষজ্ঞ',
+    specialtySlug: 'pediatrics',
+    bmdcNumber: 'A-34567',
+    bmdcVerified: true,
+    qualifications: ['MBBS', 'DCH', 'FCPS (Pediatrics)'],
+    about: 'Associate Professor Dr. Abdul Rashid is a dedicated pediatric specialist with 22 years of experience treating children from newborns to adolescents. He specializes in neonatal care, pediatric infectious diseases, and growth disorders.',
+    experience: 22,
+    consultationFee: 1000,
+    followUpFee: 600,
+    rating: 4.7,
+    reviewCount: 145,
+    totalAppointments: 5600,
+    isAvailableOnline: true,
+    isFeatured: true,
+    isVerified: true,
+    languages: ['Bangla', 'English'],
+    district: 'Dhaka',
+    districtSlug: 'dhaka',
+    area: 'Gulshan',
+    hospital: 'United Hospital Limited',
+    phone: '01733333333',
+    slug: 'dr-abdul-rashid',
+    chambers: [
+      {
+        name: "Assoc. Prof. Rashid's Child Care",
+        address: 'Road 71, Gulshan-2, Dhaka-1212',
+        area: 'Gulshan',
+        district: 'Dhaka',
+        fee: 1000,
+        schedule: [
+          { day: 'SAT', startTime: '10:00', endTime: '17:00' },
+          { day: 'SUN', startTime: '10:00', endTime: '17:00' },
+          { day: 'TUE', startTime: '10:00', endTime: '17:00' },
+          { day: 'THU', startTime: '10:00', endTime: '17:00' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'doc-004',
+    name: 'Mahmudur Rahman',
+    title: 'Prof. Dr.',
+    nameBn: 'মাহমুদুর রহমান',
+    gender: 'MALE',
+    photo: 'https://api.dicebear.com/8.x/avataaars/svg?seed=mahmud&backgroundColor=d1f4d0&clothingColor=2d6a4f',
+    specialty: 'Orthopedics',
+    specialtyBn: 'হাড় বিশেষজ্ঞ',
+    specialtySlug: 'orthopedics',
+    bmdcNumber: 'A-45678',
+    bmdcVerified: true,
+    qualifications: ['MBBS', 'MS (Orthopedics)', 'FRCS (UK)'],
+    about: 'Professor Dr. Mahmudur Rahman is a leading orthopedic surgeon specializing in joint replacement surgery, sports injuries, and complex spine disorders with 20 years of experience at top hospitals in Bangladesh and UK.',
+    experience: 20,
+    consultationFee: 2000,
+    followUpFee: 1000,
+    telemedicineFee: 1500,
+    rating: 4.8,
+    reviewCount: 223,
+    totalAppointments: 3900,
+    isAvailableOnline: true,
+    isFeatured: true,
+    isVerified: true,
+    languages: ['Bangla', 'English'],
+    district: 'Dhaka',
+    districtSlug: 'dhaka',
+    area: 'Bashundhara',
+    hospital: 'Evercare Hospital Dhaka',
+    phone: '01744444444',
+    whatsapp: '01744444444',
+    slug: 'dr-mahmudur-rahman',
+    chambers: [
+      {
+        name: "Prof. Mahmud's Ortho Clinic",
+        address: 'Plot 81, Block E, Bashundhara R/A, Dhaka-1229',
+        area: 'Bashundhara',
+        district: 'Dhaka',
+        fee: 2000,
+        schedule: [
+          { day: 'SAT', startTime: '09:00', endTime: '15:00' },
+          { day: 'SUN', startTime: '09:00', endTime: '15:00' },
+          { day: 'MON', startTime: '09:00', endTime: '15:00' },
+          { day: 'WED', startTime: '09:00', endTime: '15:00' },
+          { day: 'THU', startTime: '09:00', endTime: '15:00' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'doc-005',
+    name: 'Abul Kalam Azad',
+    title: 'Prof. Dr.',
+    nameBn: 'আবুল কালাম আজাদ',
+    gender: 'MALE',
+    photo: 'https://api.dicebear.com/8.x/avataaars/svg?seed=azad&backgroundColor=f5d0c5&clothingColor=8b4513',
+    specialty: 'Neurology',
+    specialtyBn: 'নিউরোলজি',
+    specialtySlug: 'neurology',
+    bmdcNumber: 'A-67890',
+    bmdcVerified: true,
+    qualifications: ['MBBS', 'MD (Neurology)', 'MRCP (UK)'],
+    about: "Professor Dr. Abul Kalam Azad is one of Bangladesh's most prominent neurologists with 25 years of experience treating stroke, epilepsy, Parkinson's disease, and complex movement disorders.",
+    experience: 25,
+    consultationFee: 2500,
+    followUpFee: 1200,
+    telemedicineFee: 1800,
+    rating: 4.9,
+    reviewCount: 387,
+    totalAppointments: 6800,
+    isAvailableOnline: true,
+    isFeatured: true,
+    isVerified: true,
+    languages: ['Bangla', 'English'],
+    district: 'Dhaka',
+    districtSlug: 'dhaka',
+    area: 'Gulshan',
+    hospital: 'United Hospital Limited',
+    phone: '01766666666',
+    whatsapp: '01766666666',
+    slug: 'dr-abul-kalam-azad',
+    chambers: [
+      {
+        name: "Prof. Azad's Neuro Centre",
+        address: 'Plot 15, Road 71, Gulshan-2, Dhaka-1212',
+        area: 'Gulshan',
+        district: 'Dhaka',
+        fee: 2500,
+        schedule: [
+          { day: 'SAT', startTime: '11:00', endTime: '16:00' },
+          { day: 'MON', startTime: '11:00', endTime: '16:00' },
+          { day: 'WED', startTime: '11:00', endTime: '16:00' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'doc-006',
+    name: 'Shirina Sultana',
+    title: 'Dr.',
+    nameBn: 'শিরিনা সুলতানা',
+    gender: 'FEMALE',
+    photo: 'https://api.dicebear.com/8.x/avataaars/svg?seed=shirina&backgroundColor=e8d5ff&clothingColor=7c3aed',
+    specialty: 'Ophthalmology',
+    specialtyBn: 'চক্ষু বিশেষজ্ঞ',
+    specialtySlug: 'ophthalmology',
+    bmdcNumber: 'A-56789',
+    bmdcVerified: true,
+    qualifications: ['MBBS', 'DO', 'FCPS (Ophthalmology)'],
+    about: 'Dr. Shirina Sultana is an eye specialist with expertise in cataract surgery, glaucoma management, and refractive surgery. She has performed over 3,000 successful eye surgeries in her 12-year career.',
+    experience: 12,
+    consultationFee: 800,
+    followUpFee: 500,
+    rating: 4.6,
+    reviewCount: 88,
+    totalAppointments: 2100,
+    isAvailableOnline: false,
+    isFeatured: false,
+    isVerified: true,
+    languages: ['Bangla', 'English'],
+    district: 'Dhaka',
+    districtSlug: 'dhaka',
+    area: 'Mohammadpur',
+    hospital: 'Square Hospital Ltd.',
+    phone: '01755555555',
+    slug: 'dr-shirina-sultana',
+    chambers: [
+      {
+        name: "Dr. Shirina's Eye Care Centre",
+        address: 'House 12, Ring Road, Mohammadpur, Dhaka-1207',
+        area: 'Mohammadpur',
+        district: 'Dhaka',
+        fee: 800,
+        schedule: [
+          { day: 'SUN', startTime: '10:00', endTime: '15:00' },
+          { day: 'TUE', startTime: '10:00', endTime: '15:00' },
+          { day: 'THU', startTime: '10:00', endTime: '15:00' },
+          { day: 'SAT', startTime: '10:00', endTime: '15:00' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'doc-007',
+    name: 'Roksana Begum',
+    title: 'Dr.',
+    nameBn: 'রোকসানা বেগম',
+    gender: 'FEMALE',
+    photo: 'https://api.dicebear.com/8.x/avataaars/svg?seed=roksana&backgroundColor=fef3c7&clothingColor=d97706',
+    specialty: 'Endocrinology',
+    specialtyBn: 'হরমোন বিশেষজ্ঞ',
+    specialtySlug: 'endocrinology',
+    bmdcNumber: 'A-78901',
+    bmdcVerified: true,
+    qualifications: ['MBBS', 'MD (Endocrinology)'],
+    about: 'Dr. Roksana Begum specializes in diabetes mellitus, thyroid disorders, polycystic ovarian syndrome, and other hormonal imbalances. She is known for her patient-centred approach to chronic disease management.',
+    experience: 14,
+    consultationFee: 1200,
+    followUpFee: 700,
+    rating: 4.7,
+    reviewCount: 112,
+    totalAppointments: 2800,
+    isAvailableOnline: true,
+    isFeatured: false,
+    isVerified: true,
+    languages: ['Bangla', 'English'],
+    district: 'Dhaka',
+    districtSlug: 'dhaka',
+    area: 'Dhanmondi',
+    hospital: 'Popular Diagnostic Centre',
+    phone: '01777777777',
+    whatsapp: '01777777777',
+    slug: 'dr-roksana-begum',
+    chambers: [
+      {
+        name: "Dr. Roksana's Diabetes & Hormone Care",
+        address: 'House 8, Road 4, Dhanmondi, Dhaka-1205',
+        area: 'Dhanmondi',
+        district: 'Dhaka',
+        fee: 1200,
+        schedule: [
+          { day: 'SAT', startTime: '10:00', endTime: '15:00' },
+          { day: 'SUN', startTime: '10:00', endTime: '15:00' },
+          { day: 'TUE', startTime: '10:00', endTime: '15:00' },
+          { day: 'WED', startTime: '10:00', endTime: '15:00' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'doc-008',
+    name: 'Zahirul Hossain',
+    title: 'Dr.',
+    nameBn: 'জাহিরুল হোসেন',
+    gender: 'MALE',
+    photo: 'https://api.dicebear.com/8.x/avataaars/svg?seed=zahir&backgroundColor=c5f2d4&clothingColor=166534',
+    specialty: 'Dermatology',
+    specialtyBn: 'চর্মরোগ বিশেষজ্ঞ',
+    specialtySlug: 'dermatology',
+    bmdcNumber: 'A-89012',
+    bmdcVerified: true,
+    qualifications: ['MBBS', 'DDV', 'FCPS (Dermatology)'],
+    about: 'Dr. Zahirul Hossain is a dermatologist and venereologist specializing in skin diseases, cosmetic dermatology, hair loss treatment, and advanced laser therapies with 16 years of clinical experience.',
+    experience: 16,
+    consultationFee: 900,
+    followUpFee: 500,
+    rating: 4.5,
+    reviewCount: 76,
+    totalAppointments: 1900,
+    isAvailableOnline: false,
+    isFeatured: false,
+    isVerified: true,
+    languages: ['Bangla', 'English'],
+    district: 'Chittagong',
+    districtSlug: 'chittagong',
+    area: 'Agrabad',
+    hospital: 'Chittagong Medical Centre',
+    phone: '01788888888',
+    slug: 'dr-zahirul-hossain',
+    chambers: [
+      {
+        name: "Dr. Zahir's Skin & Laser Care",
+        address: 'Agrabad C/A, Chittagong',
+        area: 'Agrabad',
+        district: 'Chittagong',
+        fee: 900,
+        schedule: [
+          { day: 'SAT', startTime: '10:00', endTime: '16:00' },
+          { day: 'MON', startTime: '10:00', endTime: '16:00' },
+          { day: 'WED', startTime: '10:00', endTime: '16:00' },
+          { day: 'THU', startTime: '10:00', endTime: '16:00' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'doc-009',
+    name: 'Fahmida Khanam',
+    title: 'Dr.',
+    nameBn: 'ফাহমিদা খানম',
+    gender: 'FEMALE',
+    photo: 'https://api.dicebear.com/8.x/avataaars/svg?seed=fahmida&backgroundColor=dbeafe&clothingColor=1d4ed8',
+    specialty: 'Psychiatry',
+    specialtyBn: 'মনোরোগ বিশেষজ্ঞ',
+    specialtySlug: 'psychiatry',
+    bmdcNumber: 'A-90123',
+    bmdcVerified: true,
+    qualifications: ['MBBS', 'MD (Psychiatry)', 'MRCPsych (UK)'],
+    about: 'Dr. Fahmida Khanam is a consultant psychiatrist with special interest in mood disorders, anxiety, OCD, and adolescent mental health. She provides compassionate, evidence-based care in a safe, non-judgmental environment.',
+    experience: 11,
+    consultationFee: 1500,
+    followUpFee: 800,
+    telemedicineFee: 1200,
+    rating: 4.8,
+    reviewCount: 94,
+    totalAppointments: 1600,
+    isAvailableOnline: true,
+    isFeatured: false,
+    isVerified: true,
+    languages: ['Bangla', 'English'],
+    district: 'Dhaka',
+    districtSlug: 'dhaka',
+    area: 'Banani',
+    hospital: 'Evercare Hospital Dhaka',
+    phone: '01799999999',
+    whatsapp: '01799999999',
+    slug: 'dr-fahmida-khanam',
+    chambers: [
+      {
+        name: 'Mind & Wellness Clinic',
+        address: 'House 24, Road 17, Banani, Dhaka-1213',
+        area: 'Banani',
+        district: 'Dhaka',
+        fee: 1500,
+        schedule: [
+          { day: 'SUN', startTime: '10:00', endTime: '16:00' },
+          { day: 'TUE', startTime: '10:00', endTime: '16:00' },
+          { day: 'THU', startTime: '10:00', endTime: '16:00' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'doc-010',
+    name: 'Kamruzzaman Sarker',
+    title: 'Dr.',
+    nameBn: 'কামরুজ্জামান সরকার',
+    gender: 'MALE',
+    photo: 'https://api.dicebear.com/8.x/avataaars/svg?seed=kamrul&backgroundColor=fce7f3&clothingColor=9d174d',
+    specialty: 'General Surgery',
+    specialtyBn: 'সাধারণ সার্জারি',
+    specialtySlug: 'general-surgery',
+    bmdcNumber: 'A-01234',
+    bmdcVerified: true,
+    qualifications: ['MBBS', 'FCPS (Surgery)', 'MS (Surgery)'],
+    about: 'Dr. Kamruzzaman Sarker is an experienced general and laparoscopic surgeon with 17 years of experience. He specializes in minimally invasive surgery for gallbladder, appendix, hernia, and colorectal conditions.',
+    experience: 17,
+    consultationFee: 1100,
+    followUpFee: 600,
+    rating: 4.6,
+    reviewCount: 134,
+    totalAppointments: 3100,
+    isAvailableOnline: false,
+    isFeatured: false,
+    isVerified: true,
+    languages: ['Bangla', 'English'],
+    district: 'Sylhet',
+    districtSlug: 'sylhet',
+    area: 'Ambarkhana',
+    hospital: 'Ibn Sina Hospital Sylhet',
+    phone: '01700000001',
+    slug: 'dr-kamruzzaman-sarker',
+    chambers: [
+      {
+        name: "Dr. Kamrul's Surgical Care",
+        address: 'Ambarkhana Point, Sylhet',
+        area: 'Ambarkhana',
+        district: 'Sylhet',
+        fee: 1100,
+        schedule: [
+          { day: 'SAT', startTime: '09:00', endTime: '14:00' },
+          { day: 'MON', startTime: '09:00', endTime: '14:00' },
+          { day: 'WED', startTime: '09:00', endTime: '14:00' },
+          { day: 'THU', startTime: '15:00', endTime: '19:00' },
+        ],
+      },
+    ],
+  },
+];
+
+// ─────────────────────────────────────────
+// HOSPITALS
+// ─────────────────────────────────────────
+
+export const MOCK_HOSPITALS: Hospital[] = [
+  {
+    id: 'hosp-001',
+    name: 'Square Hospital Ltd.',
+    nameBn: 'স্কয়ার হাসপাতাল',
+    slug: 'square-hospital',
+    type: 'Private',
+    address: '18/F, Bir Uttam Qazi Nuruzzaman Sarak, West Panthapath, Dhaka-1205',
+    district: 'Dhaka',
+    phone: '10616',
+    email: 'info@squarehospital.com',
+    website: 'https://www.squarehospital.com',
+    bedCount: 350,
+    isEmergency: true,
+    emergencyPhone: '10616',
+    rating: 4.5,
+    reviewCount: 1240,
+    isVerified: true,
+    isFeatured: true,
+    specialties: ['Cardiology', 'Neurology', 'Orthopedics', 'Pediatrics', 'Gynecology', 'Oncology'],
+    establishedYear: 2006,
+    description: 'Square Hospital Ltd. is one of the leading multispecialty hospitals in Bangladesh, equipped with state-of-the-art medical technology and a team of highly qualified physicians. JCI accreditation pending.',
+  },
+  {
+    id: 'hosp-002',
+    name: 'United Hospital Limited',
+    nameBn: 'ইউনাইটেড হাসপাতাল',
+    slug: 'united-hospital',
+    type: 'Private',
+    address: 'Plot 15, Road 71, Gulshan-2, Dhaka-1212',
+    district: 'Dhaka',
+    phone: '10666',
+    email: 'info@uhlbd.com',
+    website: 'https://www.uhlbd.com',
+    bedCount: 500,
+    isEmergency: true,
+    emergencyPhone: '10666',
+    rating: 4.6,
+    reviewCount: 1876,
+    isVerified: true,
+    isFeatured: true,
+    specialties: ['Cardiology', 'Oncology', 'Nephrology', 'Neurology', 'ICU', 'Transplant'],
+    establishedYear: 2006,
+    description: 'United Hospital Limited is a 500-bed tertiary care hospital in Gulshan with internationally trained specialists and cutting-edge diagnostics. Offers comprehensive inpatient and outpatient services.',
+  },
+  {
+    id: 'hosp-003',
+    name: 'Evercare Hospital Dhaka',
+    nameBn: 'এভারকেয়ার হাসপাতাল',
+    slug: 'evercare-hospital',
+    type: 'Private',
+    address: 'Plot 81, Block E, Bashundhara R/A, Dhaka-1229',
+    district: 'Dhaka',
+    phone: '10678',
+    email: 'info@evercarebd.com',
+    bedCount: 400,
+    isEmergency: true,
+    emergencyPhone: '10678',
+    rating: 4.7,
+    reviewCount: 2103,
+    isVerified: true,
+    isFeatured: true,
+    specialties: ['Cardiology', 'Neurosurgery', 'Oncology', 'Orthopedics', 'Psychiatry', 'Rehabilitation'],
+    establishedYear: 2014,
+    description: 'Evercare Hospital Dhaka is a JCI-accredited multispecialty hospital in Bashundhara providing world-class healthcare services with internationally qualified medical professionals.',
+  },
+  {
+    id: 'hosp-004',
+    name: 'Popular Diagnostic Centre',
+    nameBn: 'পপুলার ডায়াগনস্টিক সেন্টার',
+    slug: 'popular-diagnostic',
+    type: 'Diagnostic',
+    address: 'House 16, Road 2, Dhanmondi, Dhaka-1205',
+    district: 'Dhaka',
+    phone: '01713383000',
+    isEmergency: false,
+    rating: 4.2,
+    reviewCount: 876,
+    isVerified: true,
+    isFeatured: false,
+    specialties: ['Pathology', 'Radiology', 'MRI', 'CT Scan', 'Endoscopy', 'Cardiology'],
+    establishedYear: 1983,
+    description: 'Popular Diagnostic Centre is one of the largest diagnostic chains in Bangladesh with 40+ branches nationwide, offering comprehensive laboratory, imaging, and specialist consultation services.',
+  },
+  {
+    id: 'hosp-005',
+    name: 'Dhaka Medical College Hospital',
+    nameBn: 'ঢাকা মেডিকেল কলেজ হাসপাতাল',
+    slug: 'dhaka-medical-college',
+    type: 'Government',
+    address: 'Secretariat Road, Dhaka-1000',
+    district: 'Dhaka',
+    phone: '02-55165088',
+    bedCount: 2300,
+    isEmergency: true,
+    emergencyPhone: '199',
+    rating: 4.0,
+    reviewCount: 3420,
+    isVerified: true,
+    isFeatured: false,
+    specialties: ['All Specialties', 'Burn Unit', 'Trauma', 'Emergency', 'Teaching Hospital'],
+    establishedYear: 1946,
+    description: 'Dhaka Medical College Hospital is the largest government hospital in Bangladesh with 2,300 beds. As a national referral hospital and teaching institution, it provides free or heavily subsidised care.',
+  },
+  {
+    id: 'hosp-006',
+    name: 'Chittagong Medical Centre',
+    nameBn: 'চট্টগ্রাম মেডিকেল সেন্টার',
+    slug: 'chittagong-medical-centre',
+    type: 'Private',
+    address: 'Agrabad C/A, Chittagong-4100',
+    district: 'Chittagong',
+    phone: '031-710501',
+    bedCount: 200,
+    isEmergency: true,
+    emergencyPhone: '031-710501',
+    rating: 4.3,
+    reviewCount: 654,
+    isVerified: true,
+    isFeatured: false,
+    specialties: ['General Medicine', 'Surgery', 'Gynecology', 'Pediatrics', 'Orthopedics'],
+    establishedYear: 1998,
+    description: 'Chittagong Medical Centre is a leading private hospital in the port city, providing quality healthcare services across specialties with experienced medical professionals.',
+  },
+];
+
+// ─────────────────────────────────────────
+// APPOINTMENTS
+// ─────────────────────────────────────────
+
+export const MOCK_APPOINTMENTS: Appointment[] = [
+  {
+    id: 'appt-001',
+    doctorId: 'doc-001',
+    doctorName: 'Prof. Dr. Aminul Islam',
+    doctorPhoto: 'https://api.dicebear.com/8.x/avataaars/svg?seed=aminul&backgroundColor=b6e3f4',
+    specialty: 'Cardiology',
+    hospital: 'Square Hospital Ltd.',
+    date: '2026-05-24',
+    time: '10:30',
+    status: 'UPCOMING',
+    fee: 1500,
+    paymentStatus: 'PAID',
+    appointmentNumber: 'SBD-2026-APT001',
+    type: 'IN_PERSON',
+  },
+  {
+    id: 'appt-002',
+    doctorId: 'doc-005',
+    doctorName: 'Prof. Dr. Abul Kalam Azad',
+    doctorPhoto: 'https://api.dicebear.com/8.x/avataaars/svg?seed=azad&backgroundColor=f5d0c5',
+    specialty: 'Neurology',
+    hospital: 'United Hospital Limited',
+    date: '2026-05-28',
+    time: '14:00',
+    status: 'UPCOMING',
+    fee: 2500,
+    paymentStatus: 'PENDING',
+    appointmentNumber: 'SBD-2026-APT002',
+    type: 'TELEMEDICINE',
+  },
+  {
+    id: 'appt-003',
+    doctorId: 'doc-002',
+    doctorName: 'Dr. Nasrin Akter',
+    doctorPhoto: 'https://api.dicebear.com/8.x/avataaars/svg?seed=nasrin&backgroundColor=ffd5dc',
+    specialty: 'Gynecology & Obstetrics',
+    hospital: 'Square Hospital Ltd.',
+    date: '2026-04-15',
+    time: '10:00',
+    status: 'COMPLETED',
+    fee: 1200,
+    paymentStatus: 'PAID',
+    appointmentNumber: 'SBD-2026-APT003',
+    type: 'IN_PERSON',
+  },
+  {
+    id: 'appt-004',
+    doctorId: 'doc-003',
+    doctorName: 'Assoc. Prof. Dr. Abdul Rashid',
+    doctorPhoto: 'https://api.dicebear.com/8.x/avataaars/svg?seed=rashid&backgroundColor=c0aede',
+    specialty: 'Pediatrics',
+    hospital: 'United Hospital Limited',
+    date: '2026-03-20',
+    time: '11:00',
+    status: 'COMPLETED',
+    fee: 1000,
+    paymentStatus: 'PAID',
+    appointmentNumber: 'SBD-2026-APT004',
+    type: 'IN_PERSON',
+  },
+  {
+    id: 'appt-005',
+    doctorId: 'doc-007',
+    doctorName: 'Dr. Roksana Begum',
+    doctorPhoto: 'https://api.dicebear.com/8.x/avataaars/svg?seed=roksana&backgroundColor=fef3c7',
+    specialty: 'Endocrinology',
+    hospital: 'Popular Diagnostic Centre',
+    date: '2026-03-02',
+    time: '09:30',
+    status: 'CANCELLED',
+    fee: 1200,
+    paymentStatus: 'REFUNDED',
+    appointmentNumber: 'SBD-2026-APT005',
+    type: 'IN_PERSON',
+  },
+];
+
+// ─────────────────────────────────────────
+// STATIC LISTS
+// ─────────────────────────────────────────
+
+export const SPECIALTIES = [
+  { slug: 'cardiology',      name: 'Cardiology',          icon: '❤️',  doctorCount: 340 },
+  { slug: 'neurology',       name: 'Neurology',           icon: '🧠',  doctorCount: 210 },
+  { slug: 'gynecology',      name: 'Gynecology',          icon: '🤱',  doctorCount: 280 },
+  { slug: 'pediatrics',      name: 'Pediatrics',          icon: '👶',  doctorCount: 420 },
+  { slug: 'orthopedics',     name: 'Orthopedics',         icon: '🦴',  doctorCount: 190 },
+  { slug: 'dermatology',     name: 'Dermatology',         icon: '🩺',  doctorCount: 175 },
+  { slug: 'ophthalmology',   name: 'Ophthalmology',       icon: '👁️',  doctorCount: 160 },
+  { slug: 'dentistry',       name: 'Dentistry',           icon: '🦷',  doctorCount: 380 },
+  { slug: 'psychiatry',      name: 'Psychiatry',          icon: '💬',  doctorCount: 130 },
+  { slug: 'endocrinology',   name: 'Endocrinology',       icon: '⚗️',  doctorCount: 140 },
+  { slug: 'nephrology',      name: 'Nephrology',          icon: '💊',  doctorCount: 95  },
+  { slug: 'general-surgery', name: 'General Surgery',     icon: '🏥',  doctorCount: 260 },
+];
+
+export const DISTRICTS = [
+  { slug: 'dhaka',       name: 'Dhaka'      },
+  { slug: 'chittagong',  name: 'Chittagong' },
+  { slug: 'sylhet',      name: 'Sylhet'     },
+  { slug: 'rajshahi',    name: 'Rajshahi'   },
+  { slug: 'khulna',      name: 'Khulna'     },
+  { slug: 'barisal',     name: 'Barisal'    },
+  { slug: 'rangpur',     name: 'Rangpur'    },
+  { slug: 'mymensingh',  name: 'Mymensingh' },
+];
+
+export const PLATFORM_STATS = [
+  { value: '12,400+', label: 'Verified Doctors' },
+  { value: '850+',    label: 'Partner Hospitals' },
+  { value: '9.8L+',   label: 'Patients Served'  },
+  { value: '64',      label: 'Districts Covered' },
+];

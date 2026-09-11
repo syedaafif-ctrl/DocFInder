@@ -1,0 +1,239 @@
+version: '3.9'
+
+# =============================================================
+# DocHub BD - Development Docker Compose
+# All services needed for local development
+# =============================================================
+
+services:
+  # --------------------------------------------------------
+  # PostgreSQL Database
+  # --------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: dochub_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: dochub_bd
+      POSTGRES_USER: dochub
+      POSTGRES_PASSWORD: dochub_password
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - dochub_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dochub -d dochub_bd"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # --------------------------------------------------------
+  # Redis Cache
+  # --------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: dochub_redis
+    restart: unless-stopped
+    command: >
+      redis-server
+      --appendonly yes
+      --appendfilename "appendonly.aof"
+      --maxmemory 512mb
+      --maxmemory-policy allkeys-lru
+      --requirepass ""
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - dochub_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # --------------------------------------------------------
+  # Elasticsearch Search Engine
+  # --------------------------------------------------------
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.0
+    container_name: dochub_elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.security.enrollment.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx1g
+      - cluster.name=dochub-cluster
+      - node.name=dochub-node-1
+      - bootstrap.memory_lock=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - dochub_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -q 'green\\|yellow'"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
+  # --------------------------------------------------------
+  # Kibana (Elasticsearch UI - Dev only)
+  # --------------------------------------------------------
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.13.0
+    container_name: dochub_kibana
+    restart: unless-stopped
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - xpack.security.enabled=false
+    ports:
+      - "5601:5601"
+    networks:
+      - dochub_network
+    profiles:
+      - tools
+
+  # --------------------------------------------------------
+  # NestJS API
+  # --------------------------------------------------------
+  api:
+    build:
+      context: ../../apps/api
+      dockerfile: Dockerfile.dev
+    container_name: dochub_api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://dochub:dochub_password@postgres:5432/dochub_bd?schema=public
+      REDIS_URL: redis://redis:6379
+      ELASTICSEARCH_NODE: http://elasticsearch:9200
+      JWT_SECRET: dev-jwt-secret-change-in-production-min-32
+      JWT_REFRESH_SECRET: dev-refresh-secret-change-in-production-min-32
+      PORT: 4000
+    volumes:
+      - ../../apps/api:/app
+      - /app/node_modules
+    ports:
+      - "4000:4000"
+    networks:
+      - dochub_network
+    command: npm run start:dev
+
+  # --------------------------------------------------------
+  # Next.js Web Frontend
+  # --------------------------------------------------------
+  web:
+    build:
+      context: ../../apps/web
+      dockerfile: Dockerfile.dev
+    container_name: dochub_web
+    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:4000/api/v1
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+    volumes:
+      - ../../apps/web:/app
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - "3000:3000"
+    networks:
+      - dochub_network
+    command: npm run dev
+
+  # --------------------------------------------------------
+  # Nginx Reverse Proxy
+  # --------------------------------------------------------
+  nginx:
+    image: nginx:alpine
+    container_name: dochub_nginx
+    restart: unless-stopped
+    depends_on:
+      - web
+      - api
+    volumes:
+      - ../nginx/nginx.dev.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80"
+    networks:
+      - dochub_network
+    profiles:
+      - proxy
+
+  # --------------------------------------------------------
+  # pgAdmin (Database UI - Dev only)
+  # --------------------------------------------------------
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: dochub_pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@dochubbd.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    networks:
+      - dochub_network
+    profiles:
+      - tools
+
+  # --------------------------------------------------------
+  # Redis Commander (Redis UI - Dev only)
+  # --------------------------------------------------------
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: dochub_redis_ui
+    restart: unless-stopped
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    ports:
+      - "8081:8081"
+    networks:
+      - dochub_network
+    profiles:
+      - tools
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  elasticsearch_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+networks:
+  dochub_network:
+    driver: bridge
+    name: dochub_network

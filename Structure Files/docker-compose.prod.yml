@@ -1,0 +1,109 @@
+version: '3.9'
+
+# =============================================================
+# DocHub BD - PRODUCTION Docker Compose
+# =============================================================
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: dochub_postgres_prod
+    restart: always
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+    networks:
+      - dochub_prod_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER} -d ${DATABASE_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: dochub_redis_prod
+    restart: always
+    command: >
+      redis-server
+      --requirepass ${REDIS_PASSWORD}
+      --appendonly yes
+      --maxmemory 1gb
+      --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_prod_data:/data
+    networks:
+      - dochub_prod_network
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.0
+    container_name: dochub_elasticsearch_prod
+    restart: always
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=true
+      - ELASTIC_PASSWORD=${ELASTICSEARCH_PASSWORD}
+      - ES_JAVA_OPTS=-Xms1g -Xmx2g
+    volumes:
+      - elasticsearch_prod_data:/usr/share/elasticsearch/data
+    networks:
+      - dochub_prod_network
+
+  api:
+    build:
+      context: ../../apps/api
+      dockerfile: Dockerfile
+      target: production
+    container_name: dochub_api_prod
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+      - elasticsearch
+    env_file:
+      - ../../.env.production
+    networks:
+      - dochub_prod_network
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+
+  nginx:
+    image: nginx:alpine
+    container_name: dochub_nginx_prod
+    restart: always
+    depends_on:
+      - api
+    volumes:
+      - ../nginx/nginx.prod.conf:/etc/nginx/nginx.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - certbot_webroot:/var/www/certbot:ro
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - dochub_prod_network
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt
+      - certbot_webroot:/var/www/certbot
+    profiles:
+      - ssl
+
+volumes:
+  postgres_prod_data:
+  redis_prod_data:
+  elasticsearch_prod_data:
+  certbot_webroot:
+
+networks:
+  dochub_prod_network:
+    driver: bridge

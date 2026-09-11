@@ -1,0 +1,1010 @@
+// ============================================================
+// DocHub BD — Mock Data
+// Mirrors the real database seed from packages/db/prisma/seed.ts
+// Used for local development and Next.js API route responses
+// ============================================================
+
+import type { DoctorListItem, Doctor } from '@/types';
+
+// ─── Shared sub-data ──────────────────────────────────────
+
+const DHAKA_DISTRICT = {
+  id: 'dist-dhaka',
+  name: 'Dhaka',
+  nameBn: 'ঢাকা',
+  slug: 'dhaka-district',
+};
+
+const CHITTAGONG_DISTRICT = {
+  id: 'dist-ctg',
+  name: 'Chittagong',
+  nameBn: 'চট্টগ্রাম',
+  slug: 'chittagong-district',
+};
+
+const SYLHET_DISTRICT = {
+  id: 'dist-syl',
+  name: 'Sylhet',
+  nameBn: 'সিলেট',
+  slug: 'sylhet-district',
+};
+
+const RAJSHAHI_DISTRICT = {
+  id: 'dist-raj',
+  name: 'Rajshahi',
+  nameBn: 'রাজশাহী',
+  slug: 'rajshahi-district',
+};
+
+// ─── Mock Doctors ─────────────────────────────────────────
+
+export const MOCK_DOCTORS: DoctorListItem[] = [
+  {
+    id: 'doc-001',
+    slug: 'dr-aminul-islam',
+    name: 'Dr. Aminul Islam',
+    nameBn: 'ডাঃ আমিনুল ইসলাম',
+    title: 'Prof.',
+    gender: 'MALE',
+    photo: 'https://api.dicebear.com/8.x/avataaars/svg?seed=aminul&backgroundColor=b6e3f4',
+    bmdcVerified: true,
+    experience: 18,
+    consultationFee: 1500,
+    followUpFee: 800,
+    isAvailableOnline: true,
+    isFeatured: true,
+    isVerified: true,
+    rating: 4.9,
+    reviewCount: 312,
+    totalAppointments: 4820,
+    profileViews: 18400,
+    sponsoredRank: 1,
+    languages: ['bn', 'en'],
+    status: 'ACTIVE',
+    verificationStatus: 'VERIFIED',
+    specialties: [{ id: 'ds-001', specialtyId: 'cardiology', isPrimary: true, specialty: { id: 'cardiology', name: 'Cardiology', nameBn: 'হৃদরোগ বিশেষজ্ঞ', slug: 'cardiology' } }],
+    qualifications: [
+      { degree: 'MBBS', institution: 'Dhaka Medical College' },
+      { degree: 'MD (Cardiology)', institution: 'BSMMU' },
+      { degree: 'FRCP', institution: 'Royal College, UK' },
+    ],
+    district: DHAKA_DISTRICT,
+    chambers: [{
+      id: 'ch-001', doctorId: 'doc-001', name: "Prof. Aminul's Chamber",
+      address: 'Farmgate, Dhaka-1215', isMain: true, appointmentFee: 1500,
+      area: { id: 'area-farmgate', name: 'Farmgate', nameBn: 'ফার্মগেট' },
+      schedules: [
+        { id: 'sch-001', chamberId: 'ch-001', day: 'SATURDAY',  startTime: '10:00', endTime: '14:00', slotDuration: 15, maxPatients: 20, isClosed: false },
+        { id: 'sch-002', chamberId: 'ch-001', day: 'MONDAY',    startTime: '10:00', endTime: '14:00', slotDuration: 15, maxPatients: 20, isClosed: false },
+        { id: 'sch-003', chamberId: 'ch-001', day: 'WEDNESDAY', startTime: '16:00', endTime: '20:00', slotDuration: 15, maxPatients: 20, isClosed: false },
+        { id: 'sch-004', chamberId: 'ch-001', day: 'THURSDAY',  startTime: '16:00', endTime: '20:00', slotDuration: 15, maxPatients: 20, isClosed: false },
+      ],
+    }],
+  },
+
+  {
+    id: 'doc-002',
+    slug: 'dr-nasrin-akter',
+    name: 'Dr. Nasrin Akter',
+    nameBn: 'ডাঃ নাসরিন আক্তার',
+    title: 'Dr.',
+    gender: 'FEMALE',
+    photo: 'https://api.dicebear.com/8.x/avataaars/svg?seed=nasrin&backgroundColor=ffd5dc',
+    bmdcVerified: true,
+    experience: 15,
+    consultationFee: 1200,
+    followUpFee: 700,
+    isAvailableOnline: false,
+    isFeatured: true,
+    isVerified: true,
+    rating: 4.8,
+    reviewCount: 198,
+    totalAppointments: 3210,
+    profileViews: 12300,
+    languages: ['bn', 'en'],
+    status: 'ACTIVE',
+    verificationStatus: 'VERIFIED',
+    specialties: [{ id: 'ds-002', specialtyId: 'gynecology', isPrimary: true, specialty: { id: 'gynecology', name: 'Gynecology & Obstetrics', nameBn: 'গাইনি বিশেষজ্ঞ', slug: 'gynecology' } }],
+    qualifications: [
+      { degree: 'MBBS', institution: 'Chittagong Medical College' },
+      { degree: 'FCPS (Gynecology)', institution: 'BCPS Bangladesh' },
+      { degree: 'MS (Gynecology)', institution: 'BSMMU' },
+    ],
+    district: DHAKA_DISTRICT,
+    chambers: [{
+      id: 'ch-002', doctorId: 'doc-002', name: "Dr. Nasrin's Chamber",
+      address: 'Dhanmondi, Dhaka-1205', isMain: true, appointmentFee: 1200,
+      area: { id: 'area-dhanmondi', name: 'Dhanmondi', nameBn: 'ধানমন্ডি' },
+      schedules: [
+        { id: 'sch-005', chamberId: 'ch-002', day: 'SATURDAY',  startTime: '09:00', endTime: '13:00', slotDuration: 15, maxPatients: 20, isClosed: false },
+        { id: 'sch-006', chamberId: 'ch-002', day: 'MONDAY',    startTime: '09:00', endTime: '13:00', slotDuration: 15, maxPatients: 20, isClosed: false },
+        { id: 'sch-007', chamberId: 'ch-002', day: 'WEDNESDAY', startTime: '09:00', endTime: '13:00', slotDuration: 15, maxPatients: 20, isClosed: false },
+        { id: 'sch-008', chamberId: 'ch-002', day: 'THURSDAY',  startTime: '09:00', endTime: '13:00', slotDuration: 15, maxPatients: 20, isClosed: false },
+      ],
+    }],
+  },
+
+  {
+    id: 'doc-003',
+    slug: 'dr-abdul-rashid',
+    name: 'Dr. Abdul Rashid',
+    nameBn: 'ডাঃ আব্দুল রশিদ',
+    title: 'Assoc. Prof.',
+    gender: 'MALE',
+    photo: 'https://api.dicebear.com/8.x/avataaars/svg?seed=rashid&backgroundColor=c0aede',
+    bmdcVerified: true,
+    experience: 22,
+    consultationFee: 1000,
+    followUpFee: 600,
+    isAvailableOnline: true,
+    isFeatured: true,
+    isVerified: true,
+    rating: 4.7,
+    reviewCount: 145,
+    totalAppointments: 5600,
+    profileViews: 9800,
+    languages: ['bn', 'en'],
+    status: 'ACTIVE',
+    verificationStatus: 'VERIFIED',
+    specialties: [{ id: 'ds-003', specialtyId: 'pediatrics', isPrimary: true, specialty: { id: 'pediatrics', name: 'Pediatrics', nameBn: 'শিশু বিশেষজ্ঞ', slug: 'pediatrics' } }],
+    qualifications: [
+      { degree: 'MBBS', institution: 'Rajshahi Medical College' },
+      { degree: 'DCH', institution: 'BCPS Bangladesh' },
+      { degree: 'FCPS (Pediatrics)', institution: 'BCPS Bangladesh' },
+    ],
+    district: DHAKA_DISTRICT,
+    chambers: [{
+      id: 'ch-003', doctorId: 'doc-003', name: "Assoc. Prof. Rashid's Chamber",
+      address: 'Gulshan-2, Dhaka-1212', isMain: true, appointmentFee: 1000,
+      area: { id: 'area-gulshan', name: 'Gulshan', nameBn: 'গুলশান' },
+      schedules: [
+        { id: 'sch-009', chamberId: 'ch-003', day: 'SATURDAY',  startTime: '10:00', endTime: '17:00', slotDuration: 10, maxPatients: 30, isClosed: false },
+        { id: 'sch-010', chamberId: 'ch-003', day: 'SUNDAY',    startTime: '10:00', endTime: '17:00', slotDuration: 10, maxPatients: 30, isClosed: false },
+        { id: 'sch-011', chamberId: 'ch-003', day: 'TUESDAY',   startTime: '10:00', endTime: '17:00', slotDuration: 10, maxPatients: 30, isClosed: false },
+        { id: 'sch-012', chamberId: 'ch-003', day: 'THURSDAY',  startTime: '10:00', endTime: '17:00', slotDuration: 10, maxPatients: 30, isClosed: false },
+      ],
+    }],
+  },
+
+  {
+    id: 'doc-004',
+    slug: 'dr-mahmudur-rahman',
+    name: 'Dr. Mahmudur Rahman',
+    nameBn: 'ডাঃ মাহমুদুর রহমান',
+    title: 'Prof.',
+    gender: 'MALE',
+    photo: 'https://api.dicebear.com/8.x/avataaars/svg?seed=mahmud&backgroundColor=d1f4d0',
+    bmdcVerified: true,
+    experience: 20,
+    consultationFee: 2000,
+    followUpFee: 1000,
+    isAvailableOnline: true,
+    isFeatured: true,
+    isVerified: true,
+    rating: 4.8,
+    reviewCount: 223,
+    totalAppointments: 3900,
+    profileViews: 15600,
+    sponsoredRank: 2,
+    languages: ['bn', 'en'],
+    status: 'ACTIVE',
+    verificationStatus: 'VERIFIED',
+    specialties: [{ id: 'ds-004', specialtyId: 'orthopedics', isPrimary: true, specialty: { id: 'orthopedics', name: 'Orthopedics', nameBn: 'হাড় বিশেষজ্ঞ', slug: 'orthopedics' } }],
+    qualifications: [
+      { degree: 'MBBS', institution: 'Dhaka Medical College' },
+      { degree: 'MS (Orthopedics)', institution: 'BSMMU' },
+      { degree: 'FRCS', institution: 'Royal College of Surgeons, UK' },
+    ],
+    district: DHAKA_DISTRICT,
+    chambers: [{
+      id: 'ch-004', doctorId: 'doc-004', name: "Prof. Mahmud's Chamber",
+      address: 'Bashundhara R/A, Dhaka-1229', isMain: true, appointmentFee: 2000,
+      area: { id: 'area-bashundhara', name: 'Bashundhara', nameBn: 'বসুন্ধরা' },
+      schedules: [
+        { id: 'sch-013', chamberId: 'ch-004', day: 'SATURDAY',  startTime: '09:00', endTime: '15:00', slotDuration: 20, maxPatients: 15, isClosed: false },
+        { id: 'sch-014', chamberId: 'ch-004', day: 'SUNDAY',    startTime: '09:00', endTime: '15:00', slotDuration: 20, maxPatients: 15, isClosed: false },
+        { id: 'sch-015', chamberId: 'ch-004', day: 'MONDAY',    startTime: '09:00', endTime: '15:00', slotDuration: 20, maxPatients: 15, isClosed: false },
+        { id: 'sch-016', chamberId: 'ch-004', day: 'WEDNESDAY', startTime: '09:00', endTime: '15:00', slotDuration: 20, maxPatients: 15, isClosed: false },
+        { id: 'sch-017', chamberId: 'ch-004', day: 'THURSDAY',  startTime: '09:00', endTime: '15:00', slotDuration: 20, maxPatients: 15, isClosed: false },
+      ],
+    }],
+  },
+
+  {
+    id: 'doc-005',
+    slug: 'dr-shirina-sultana',
+    name: 'Dr. Shirina Sultana',
+    nameBn: 'ডাঃ শিরিনা সুলতানা',
+    title: 'Dr.',
+    gender: 'FEMALE',
+    photo: 'https://api.dicebear.com/8.x/avataaars/svg?seed=shirina&backgroundColor=fde68a',
+    bmdcVerified: true,
+    experience: 12,
+    consultationFee: 800,
+    followUpFee: 500,
+    isAvailableOnline: false,
+    isFeatured: false,
+    isVerified: true,
+    rating: 4.6,
+    reviewCount: 88,
+    totalAppointments: 2100,
+    profileViews: 6700,
+    languages: ['bn', 'en'],
+    status: 'ACTIVE',
+    verificationStatus: 'VERIFIED',
+    specialties: [{ id: 'ds-005', specialtyId: 'ophthalmology', isPrimary: true, specialty: { id: 'ophthalmology', name: 'Ophthalmology', nameBn: 'চক্ষু বিশেষজ্ঞ', slug: 'ophthalmology' } }],
+    qualifications: [
+      { degree: 'MBBS', institution: 'Sir Salimullah Medical College' },
+      { degree: 'DO', institution: 'BCPS Bangladesh' },
+      { degree: 'FCPS (Ophthalmology)', institution: 'BCPS Bangladesh' },
+    ],
+    district: DHAKA_DISTRICT,
+    chambers: [{
+      id: 'ch-005', doctorId: 'doc-005', name: "Dr. Shirina's Eye Care",
+      address: 'Mohammadpur, Dhaka-1207', isMain: true, appointmentFee: 800,
+      area: { id: 'area-mohammadpur', name: 'Mohammadpur', nameBn: 'মোহাম্মদপুর' },
+      schedules: [
+        { id: 'sch-018', chamberId: 'ch-005', day: 'SUNDAY',    startTime: '10:00', endTime: '15:00', slotDuration: 15, maxPatients: 20, isClosed: false },
+        { id: 'sch-019', chamberId: 'ch-005', day: 'TUESDAY',   startTime: '10:00', endTime: '15:00', slotDuration: 15, maxPatients: 20, isClosed: false },
+        { id: 'sch-020', chamberId: 'ch-005', day: 'THURSDAY',  startTime: '10:00', endTime: '15:00', slotDuration: 15, maxPatients: 20, isClosed: false },
+        { id: 'sch-021', chamberId: 'ch-005', day: 'SATURDAY',  startTime: '10:00', endTime: '15:00', slotDuration: 15, maxPatients: 20, isClosed: false },
+      ],
+    }],
+  },
+
+  {
+    id: 'doc-006',
+    slug: 'dr-abul-kalam-azad',
+    name: 'Dr. Abul Kalam Azad',
+    nameBn: 'ডাঃ আবুল কালাম আজাদ',
+    title: 'Prof.',
+    gender: 'MALE',
+    photo: 'https://api.dicebear.com/8.x/avataaars/svg?seed=azad&backgroundColor=bfdbfe',
+    bmdcVerified: true,
+    experience: 25,
+    consultationFee: 2500,
+    followUpFee: 1200,
+    isAvailableOnline: true,
+    isFeatured: true,
+    isVerified: true,
+    rating: 4.9,
+    reviewCount: 387,
+    totalAppointments: 6800,
+    profileViews: 24500,
+    sponsoredRank: 3,
+    languages: ['bn', 'en'],
+    status: 'ACTIVE',
+    verificationStatus: 'VERIFIED',
+    specialties: [{ id: 'ds-006', specialtyId: 'neurology', isPrimary: true, specialty: { id: 'neurology', name: 'Neurology', nameBn: 'নিউরোলজি', slug: 'neurology' } }],
+    qualifications: [
+      { degree: 'MBBS', institution: 'Dhaka Medical College' },
+      { degree: 'MD (Neurology)', institution: 'BSMMU' },
+      { degree: 'MRCP', institution: 'Royal College, UK' },
+    ],
+    district: DHAKA_DISTRICT,
+    chambers: [{
+      id: 'ch-006', doctorId: 'doc-006', name: "Prof. Azad's Neuro Clinic",
+      address: 'Gulshan-2, Dhaka-1212', isMain: true, appointmentFee: 2500,
+      area: { id: 'area-gulshan', name: 'Gulshan', nameBn: 'গুলশান' },
+      schedules: [
+        { id: 'sch-022', chamberId: 'ch-006', day: 'SATURDAY',  startTime: '11:00', endTime: '16:00', slotDuration: 20, maxPatients: 15, isClosed: false },
+        { id: 'sch-023', chamberId: 'ch-006', day: 'MONDAY',    startTime: '11:00', endTime: '16:00', slotDuration: 20, maxPatients: 15, isClosed: false },
+        { id: 'sch-024', chamberId: 'ch-006', day: 'WEDNESDAY', startTime: '11:00', endTime: '16:00', slotDuration: 20, maxPatients: 15, isClosed: false },
+      ],
+    }],
+  },
+
+  {
+    id: 'doc-007',
+    slug: 'dr-roksana-begum',
+    name: 'Dr. Roksana Begum',
+    nameBn: 'ডাঃ রোকসানা বেগম',
+    title: 'Dr.',
+    gender: 'FEMALE',
+    photo: 'https://api.dicebear.com/8.x/avataaars/svg?seed=roksana&backgroundColor=ddd6fe',
+    bmdcVerified: true,
+    experience: 14,
+    consultationFee: 1200,
+    followUpFee: 700,
+    isAvailableOnline: true,
+    isFeatured: false,
+    isVerified: true,
+    rating: 4.7,
+    reviewCount: 112,
+    totalAppointments: 2800,
+    profileViews: 8900,
+    languages: ['bn', 'en'],
+    status: 'ACTIVE',
+    verificationStatus: 'VERIFIED',
+    specialties: [{ id: 'ds-007', specialtyId: 'endocrinology', isPrimary: true, specialty: { id: 'endocrinology', name: 'Endocrinology', nameBn: 'হরমোন বিশেষজ্ঞ', slug: 'endocrinology' } }],
+    qualifications: [
+      { degree: 'MBBS', institution: 'Mymensingh Medical College' },
+      { degree: 'MD (Endocrinology)', institution: 'BSMMU' },
+    ],
+    district: DHAKA_DISTRICT,
+    chambers: [{
+      id: 'ch-007', doctorId: 'doc-007', name: "Dr. Roksana's Diabetes & Hormone Care",
+      address: 'Dhanmondi, Dhaka-1205', isMain: true, appointmentFee: 1200,
+      area: { id: 'area-dhanmondi', name: 'Dhanmondi', nameBn: 'ধানমন্ডি' },
+      schedules: [
+        { id: 'sch-025', chamberId: 'ch-007', day: 'SATURDAY',  startTime: '10:00', endTime: '15:00', slotDuration: 15, maxPatients: 20, isClosed: false },
+        { id: 'sch-026', chamberId: 'ch-007', day: 'SUNDAY',    startTime: '10:00', endTime: '15:00', slotDuration: 15, maxPatients: 20, isClosed: false },
+        { id: 'sch-027', chamberId: 'ch-007', day: 'TUESDAY',   startTime: '10:00', endTime: '15:00', slotDuration: 15, maxPatients: 20, isClosed: false },
+        { id: 'sch-028', chamberId: 'ch-007', day: 'WEDNESDAY', startTime: '10:00', endTime: '15:00', slotDuration: 15, maxPatients: 20, isClosed: false },
+      ],
+    }],
+  },
+
+  {
+    id: 'doc-008',
+    slug: 'dr-zahirul-hossain',
+    name: 'Dr. Zahirul Hossain',
+    nameBn: 'ডাঃ জাহিরুল হোসেন',
+    title: 'Dr.',
+    gender: 'MALE',
+    photo: 'https://api.dicebear.com/8.x/avataaars/svg?seed=zahir&backgroundColor=bbf7d0',
+    bmdcVerified: true,
+    experience: 16,
+    consultationFee: 900,
+    followUpFee: 500,
+    isAvailableOnline: false,
+    isFeatured: false,
+    isVerified: true,
+    rating: 4.5,
+    reviewCount: 76,
+    totalAppointments: 1900,
+    profileViews: 7200,
+    languages: ['bn', 'en'],
+    status: 'ACTIVE',
+    verificationStatus: 'VERIFIED',
+    specialties: [{ id: 'ds-008', specialtyId: 'dermatology', isPrimary: true, specialty: { id: 'dermatology', name: 'Dermatology', nameBn: 'চর্মরোগ বিশেষজ্ঞ', slug: 'dermatology' } }],
+    qualifications: [
+      { degree: 'MBBS', institution: 'Dhaka Medical College' },
+      { degree: 'DDV', institution: 'BCPS Bangladesh' },
+      { degree: 'FCPS (Dermatology)', institution: 'BCPS Bangladesh' },
+    ],
+    district: DHAKA_DISTRICT,
+    chambers: [{
+      id: 'ch-008', doctorId: 'doc-008', name: "Dr. Zahir's Skin Care",
+      address: 'Dhanmondi, Dhaka-1205', isMain: true, appointmentFee: 900,
+      area: { id: 'area-dhanmondi', name: 'Dhanmondi', nameBn: 'ধানমন্ডি' },
+      schedules: [
+        { id: 'sch-029', chamberId: 'ch-008', day: 'MONDAY',    startTime: '16:00', endTime: '20:00', slotDuration: 15, maxPatients: 20, isClosed: false },
+        { id: 'sch-030', chamberId: 'ch-008', day: 'THURSDAY',  startTime: '16:00', endTime: '20:00', slotDuration: 15, maxPatients: 20, isClosed: false },
+        { id: 'sch-031', chamberId: 'ch-008', day: 'SATURDAY',  startTime: '10:00', endTime: '14:00', slotDuration: 15, maxPatients: 20, isClosed: false },
+      ],
+    }],
+  },
+
+  {
+    id: 'doc-009',
+    slug: 'dr-fahmida-khanam',
+    name: 'Dr. Fahmida Khanam',
+    nameBn: 'ডাঃ ফাহমিদা খানম',
+    title: 'Dr.',
+    gender: 'FEMALE',
+    photo: 'https://api.dicebear.com/8.x/avataaars/svg?seed=fahmida&backgroundColor=fed7aa',
+    bmdcVerified: true,
+    experience: 10,
+    consultationFee: 700,
+    followUpFee: 400,
+    isAvailableOnline: true,
+    isFeatured: false,
+    isVerified: true,
+    rating: 4.4,
+    reviewCount: 62,
+    totalAppointments: 1500,
+    profileViews: 5200,
+    languages: ['bn', 'en'],
+    status: 'ACTIVE',
+    verificationStatus: 'VERIFIED',
+    specialties: [{ id: 'ds-009', specialtyId: 'psychiatry', isPrimary: true, specialty: { id: 'psychiatry', name: 'Psychiatry', nameBn: 'মনোরোগ বিশেষজ্ঞ', slug: 'psychiatry' } }],
+    qualifications: [
+      { degree: 'MBBS', institution: 'Dhaka Medical College' },
+      { degree: 'MD (Psychiatry)', institution: 'BSMMU' },
+    ],
+    district: DHAKA_DISTRICT,
+    chambers: [{
+      id: 'ch-009', doctorId: 'doc-009', name: "Dr. Fahmida's Mind & Wellness",
+      address: 'Banani, Dhaka-1213', isMain: true, appointmentFee: 700,
+      area: { id: 'area-banani', name: 'Banani', nameBn: 'বনানী' },
+      schedules: [
+        { id: 'sch-032', chamberId: 'ch-009', day: 'SUNDAY',    startTime: '10:00', endTime: '16:00', slotDuration: 30, maxPatients: 12, isClosed: false },
+        { id: 'sch-033', chamberId: 'ch-009', day: 'TUESDAY',   startTime: '10:00', endTime: '16:00', slotDuration: 30, maxPatients: 12, isClosed: false },
+        { id: 'sch-034', chamberId: 'ch-009', day: 'THURSDAY',  startTime: '10:00', endTime: '16:00', slotDuration: 30, maxPatients: 12, isClosed: false },
+      ],
+    }],
+  },
+
+  {
+    id: 'doc-010',
+    slug: 'dr-kamal-uddin',
+    name: 'Dr. Kamal Uddin',
+    nameBn: 'ডাঃ কামাল উদ্দিন',
+    title: 'Dr.',
+    gender: 'MALE',
+    photo: 'https://api.dicebear.com/8.x/avataaars/svg?seed=kamal&backgroundColor=cffafe',
+    bmdcVerified: true,
+    experience: 8,
+    consultationFee: 600,
+    followUpFee: 350,
+    isAvailableOnline: false,
+    isFeatured: false,
+    isVerified: true,
+    rating: 4.3,
+    reviewCount: 45,
+    totalAppointments: 980,
+    profileViews: 3800,
+    languages: ['bn'],
+    status: 'ACTIVE',
+    verificationStatus: 'VERIFIED',
+    specialties: [{ id: 'ds-010', specialtyId: 'dentistry', isPrimary: true, specialty: { id: 'dentistry', name: 'Dentistry', nameBn: 'দন্ত বিশেষজ্ঞ', slug: 'dentistry' } }],
+    qualifications: [
+      { degree: 'BDS', institution: 'Dhaka Dental College' },
+      { degree: 'MS (Oral Surgery)', institution: 'BSMMU' },
+    ],
+    district: SYLHET_DISTRICT,
+    chambers: [{
+      id: 'ch-010', doctorId: 'doc-010', name: "Dr. Kamal's Dental Clinic",
+      address: 'Zindabazar, Sylhet', isMain: true, appointmentFee: 600,
+      area: { id: 'area-zindabazar', name: 'Zindabazar', nameBn: 'জিন্দাবাজার' },
+      schedules: [
+        { id: 'sch-035', chamberId: 'ch-010', day: 'SATURDAY',  startTime: '09:00', endTime: '14:00', slotDuration: 20, maxPatients: 15, isClosed: false },
+        { id: 'sch-036', chamberId: 'ch-010', day: 'MONDAY',    startTime: '09:00', endTime: '14:00', slotDuration: 20, maxPatients: 15, isClosed: false },
+        { id: 'sch-037', chamberId: 'ch-010', day: 'WEDNESDAY', startTime: '09:00', endTime: '14:00', slotDuration: 20, maxPatients: 15, isClosed: false },
+        { id: 'sch-038', chamberId: 'ch-010', day: 'THURSDAY',  startTime: '15:00', endTime: '19:00', slotDuration: 20, maxPatients: 15, isClosed: false },
+      ],
+    }],
+  },
+
+  {
+    id: 'doc-011',
+    slug: 'dr-rasheda-parvin',
+    name: 'Dr. Rasheda Parvin',
+    nameBn: 'ডাঃ রাশেদা পারভীন',
+    title: 'Prof.',
+    gender: 'FEMALE',
+    photo: 'https://api.dicebear.com/8.x/avataaars/svg?seed=rasheda&backgroundColor=fce7f3',
+    bmdcVerified: true,
+    experience: 28,
+    consultationFee: 3000,
+    followUpFee: 1500,
+    isAvailableOnline: true,
+    isFeatured: true,
+    isVerified: true,
+    rating: 4.95,
+    reviewCount: 541,
+    totalAppointments: 9200,
+    profileViews: 32000,
+    sponsoredRank: 1,
+    languages: ['bn', 'en'],
+    status: 'ACTIVE',
+    verificationStatus: 'VERIFIED',
+    specialties: [
+      { id: 'ds-011', specialtyId: 'cardiology', isPrimary: true, specialty: { id: 'cardiology', name: 'Cardiology', nameBn: 'হৃদরোগ বিশেষজ্ঞ', slug: 'cardiology' } },
+      { id: 'ds-011b', specialtyId: 'general-surgery', isPrimary: false, specialty: { id: 'general-surgery', name: 'General Surgery', nameBn: 'সাধারণ সার্জারি', slug: 'general-surgery' } },
+    ],
+    qualifications: [
+      { degree: 'MBBS', institution: 'Rajshahi Medical College' },
+      { degree: 'MS (Cardiac Surgery)', institution: 'BSMMU' },
+      { degree: 'FACS', institution: 'American College of Surgeons' },
+    ],
+    district: RAJSHAHI_DISTRICT,
+    chambers: [{
+      id: 'ch-011', doctorId: 'doc-011', name: "Prof. Rasheda's Heart Centre",
+      address: 'Shaheb Bazar, Rajshahi', isMain: true, appointmentFee: 3000,
+      area: { id: 'area-shaheb', name: 'Shaheb Bazar', nameBn: 'শাহেব বাজার' },
+      schedules: [
+        { id: 'sch-039', chamberId: 'ch-011', day: 'SATURDAY',  startTime: '10:00', endTime: '14:00', slotDuration: 20, maxPatients: 12, isClosed: false },
+        { id: 'sch-040', chamberId: 'ch-011', day: 'TUESDAY',   startTime: '10:00', endTime: '14:00', slotDuration: 20, maxPatients: 12, isClosed: false },
+        { id: 'sch-041', chamberId: 'ch-011', day: 'THURSDAY',  startTime: '10:00', endTime: '14:00', slotDuration: 20, maxPatients: 12, isClosed: false },
+      ],
+    }],
+  },
+
+  {
+    id: 'doc-012',
+    slug: 'dr-sazzad-hossain',
+    name: 'Dr. Sazzad Hossain',
+    nameBn: 'ডাঃ সাজ্জাদ হোসেন',
+    title: 'Dr.',
+    gender: 'MALE',
+    photo: 'https://api.dicebear.com/8.x/avataaars/svg?seed=sazzad&backgroundColor=e0e7ff',
+    bmdcVerified: true,
+    experience: 11,
+    consultationFee: 850,
+    followUpFee: 500,
+    isAvailableOnline: true,
+    isFeatured: false,
+    isVerified: true,
+    rating: 4.5,
+    reviewCount: 93,
+    totalAppointments: 2100,
+    profileViews: 6100,
+    languages: ['bn', 'en'],
+    status: 'ACTIVE',
+    verificationStatus: 'VERIFIED',
+    specialties: [{ id: 'ds-012', specialtyId: 'nephrology', isPrimary: true, specialty: { id: 'nephrology', name: 'Nephrology', nameBn: 'কিডনি বিশেষজ্ঞ', slug: 'nephrology' } }],
+    qualifications: [
+      { degree: 'MBBS', institution: 'Sylhet MAG Osmani Medical College' },
+      { degree: 'MD (Nephrology)', institution: 'BSMMU' },
+    ],
+    district: CHITTAGONG_DISTRICT,
+    chambers: [{
+      id: 'ch-012', doctorId: 'doc-012', name: "Dr. Sazzad's Kidney Care",
+      address: 'CDA Avenue, Chittagong', isMain: true, appointmentFee: 850,
+      area: { id: 'area-cda', name: 'CDA Avenue', nameBn: 'সিডিএ অ্যাভিনিউ' },
+      schedules: [
+        { id: 'sch-042', chamberId: 'ch-012', day: 'SATURDAY',  startTime: '10:00', endTime: '15:00', slotDuration: 15, maxPatients: 20, isClosed: false },
+        { id: 'sch-043', chamberId: 'ch-012', day: 'MONDAY',    startTime: '10:00', endTime: '15:00', slotDuration: 15, maxPatients: 20, isClosed: false },
+        { id: 'sch-044', chamberId: 'ch-012', day: 'WEDNESDAY', startTime: '10:00', endTime: '15:00', slotDuration: 15, maxPatients: 20, isClosed: false },
+      ],
+    }],
+  },
+];
+
+// ─── Full doctor detail (for /doctors/[slug]) ────────────────
+
+export const MOCK_DOCTOR_DETAIL: Record<string, Doctor> = {
+  'dr-aminul-islam': {
+    id: 'doc-001',
+    slug: 'dr-aminul-islam',
+    name: 'Dr. Aminul Islam',
+    nameBn: 'ডাঃ আমিনুল ইসলাম',
+    title: 'Prof.',
+    gender: 'MALE',
+    photo: 'https://api.dicebear.com/8.x/avataaars/svg?seed=aminul&backgroundColor=b6e3f4',
+    bmdcNumber: 'A-12345',
+    bmdcVerified: true,
+    about:
+      'Professor Dr. Aminul Islam is a renowned cardiologist with 18 years of experience. He specializes in interventional cardiology, coronary artery disease, and heart failure management. He has performed over 3,000 cardiac catheterizations and 500+ angioplasties. He completed his advanced fellowship at Cleveland Clinic, USA.',
+    experience: 18,
+    consultationFee: 1500,
+    followUpFee: 800,
+    telemedicineFee: 1000,
+    phone: '01711111111',
+    whatsapp: '01711111111',
+    languages: ['bn', 'en'],
+    districtId: 'dist-dhaka',
+    district: DHAKA_DISTRICT,
+    status: 'ACTIVE',
+    verificationStatus: 'VERIFIED',
+    isAvailableOnline: true,
+    isFeatured: true,
+    isVerified: true,
+    rating: 4.9,
+    reviewCount: 312,
+    totalAppointments: 4820,
+    profileViews: 18400,
+    sponsoredRank: 1,
+    specialties: [
+      {
+        id: 'ds-001',
+        specialtyId: 'cardiology',
+        isPrimary: true,
+        specialty: { id: 'cardiology', name: 'Cardiology', nameBn: 'হৃদরোগ বিশেষজ্ঞ', slug: 'cardiology' },
+      },
+    ],
+    qualifications: [
+      { id: 'q-001', degree: 'MBBS', institution: 'Dhaka Medical College', country: 'Bangladesh', year: 2000, sortOrder: 0 },
+      { id: 'q-002', degree: 'MD (Cardiology)', institution: 'BSMMU', country: 'Bangladesh', year: 2005, sortOrder: 1 },
+      { id: 'q-003', degree: 'FRCP', institution: 'Royal College of Physicians, UK', country: 'UK', year: 2010, sortOrder: 2 },
+    ],
+    chambers: [
+      {
+        id: 'ch-001',
+        doctorId: 'doc-001',
+        name: "Prof. Aminul's Chamber — Square Hospital",
+        address: '18/F, Panthapath, Dhaka-1215',
+        areaId: 'area-farmgate',
+        area: { id: 'area-farmgate', name: 'Farmgate', nameBn: 'ফার্মগেট' },
+        phone: '01711111111',
+        latitude: 23.7582,
+        longitude: 90.3903,
+        isMain: true,
+        appointmentFee: 1500,
+        schedules: [
+          { id: 'sch-001', chamberId: 'ch-001', day: 'SATURDAY',  startTime: '10:00', endTime: '14:00', slotDuration: 15, maxPatients: 20, isClosed: false },
+          { id: 'sch-002', chamberId: 'ch-001', day: 'SUNDAY',    startTime: '10:00', endTime: '14:00', slotDuration: 15, maxPatients: 20, isClosed: false },
+          { id: 'sch-003', chamberId: 'ch-001', day: 'MONDAY',    startTime: '16:00', endTime: '20:00', slotDuration: 15, maxPatients: 20, isClosed: false },
+          { id: 'sch-004', chamberId: 'ch-001', day: 'TUESDAY',   startTime: '16:00', endTime: '20:00', slotDuration: 15, maxPatients: 20, isClosed: false },
+          { id: 'sch-005', chamberId: 'ch-001', day: 'WEDNESDAY', startTime: '10:00', endTime: '14:00', slotDuration: 15, maxPatients: 20, isClosed: false },
+          { id: 'sch-006', chamberId: 'ch-001', day: 'THURSDAY',  startTime: '10:00', endTime: '14:00', slotDuration: 15, maxPatients: 20, isClosed: false },
+          { id: 'sch-007', chamberId: 'ch-001', day: 'FRIDAY',    startTime: '00:00', endTime: '00:00', slotDuration: 15, maxPatients:  0, isClosed: true  },
+        ],
+      },
+    ],
+    hospitals: [
+      {
+        id: 'dh-001',
+        hospitalId: 'h-square',
+        hospital: { id: 'h-square', name: 'Square Hospital Ltd.', slug: 'square-hospital', type: 'Private' },
+        designation: 'Senior Consultant',
+        isActive: true,
+      },
+    ],
+    awards: [
+      { id: 'aw-001', title: 'Best Cardiologist Award', organization: 'Bangladesh Cardiac Society', year: 2020 },
+      { id: 'aw-002', title: 'Excellence in Healthcare', organization: 'Ministry of Health, BD', year: 2022 },
+    ],
+    memberships: [
+      { id: 'mb-001', organization: 'Bangladesh Cardiac Society', membershipId: 'BCS-1234' },
+      { id: 'mb-002', organization: 'American Heart Association', membershipId: 'AHA-5678' },
+    ],
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-06-01T00:00:00Z',
+  },
+};
+
+// ─── Hospitals ────────────────────────────────────────────
+
+export const MOCK_HOSPITALS = [
+  {
+    id: 'h-square',
+    name: 'Square Hospital Ltd.',
+    nameBn: 'স্কয়ার হাসপাতাল',
+    slug: 'square-hospital',
+    type: 'Private',
+    description: 'One of the leading multispecialty hospitals in Bangladesh, equipped with state-of-the-art medical technology and a team of highly qualified physicians.',
+    phone: '01713383744',
+    email: 'info@squarehospital.com',
+    website: 'https://www.squarehospital.com',
+    address: '18/F, Bir Uttam Qazi Nuruzzaman Sarak, West Panthapath, Dhaka-1205',
+    districtId: 'dist-dhaka',
+    district: DHAKA_DISTRICT,
+    isEmergency: true,
+    emergencyPhone: '10616',
+    bedCount: 350,
+    establishedYear: 2006,
+    isVerified: true,
+    isFeatured: true,
+    isActive: true,
+    rating: 4.5,
+    reviewCount: 1240,
+    departments: ['Cardiology', 'Neurology', 'Orthopedics', 'Pediatrics', 'Gynecology', 'Emergency'],
+    photos: [],
+    logo: undefined,
+    coverImage: undefined,
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+  },
+  {
+    id: 'h-united',
+    name: 'United Hospital Limited',
+    nameBn: 'ইউনাইটেড হাসপাতাল',
+    slug: 'united-hospital',
+    type: 'Private',
+    description: 'A 500-bed tertiary care hospital in Gulshan, Dhaka, offering comprehensive healthcare services with internationally trained specialists.',
+    phone: '10666',
+    email: 'info@uhlbd.com',
+    website: 'https://www.uhlbd.com',
+    address: 'Plot 15, Road 71, Gulshan-2, Dhaka-1212',
+    districtId: 'dist-dhaka',
+    district: DHAKA_DISTRICT,
+    isEmergency: true,
+    emergencyPhone: '10666',
+    bedCount: 500,
+    establishedYear: 2006,
+    isVerified: true,
+    isFeatured: true,
+    isActive: true,
+    rating: 4.6,
+    reviewCount: 1876,
+    departments: ['Cardiology', 'Oncology', 'Nephrology', 'ICU', 'Emergency'],
+    photos: [],
+    logo: undefined,
+    coverImage: undefined,
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+  },
+  {
+    id: 'h-evercare',
+    name: 'Evercare Hospital Dhaka',
+    nameBn: 'এভারকেয়ার হাসপাতাল',
+    slug: 'evercare-hospital',
+    type: 'Private',
+    description: 'JCI-accredited multispecialty hospital providing world-class healthcare services in Bashundhara.',
+    phone: '10678',
+    email: 'info@evercarebd.com',
+    website: 'https://www.evercarebd.com',
+    address: 'Plot 81, Block E, Bashundhara R/A, Dhaka-1229',
+    districtId: 'dist-dhaka',
+    district: DHAKA_DISTRICT,
+    isEmergency: true,
+    emergencyPhone: '10678',
+    bedCount: 400,
+    establishedYear: 2014,
+    isVerified: true,
+    isFeatured: true,
+    isActive: true,
+    rating: 4.7,
+    reviewCount: 2103,
+    departments: ['Cardiology', 'Neurology', 'Orthopedics', 'Oncology', 'ICU'],
+    photos: [],
+    logo: undefined,
+    coverImage: undefined,
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+  },
+  {
+    id: 'h-popular',
+    name: 'Popular Diagnostic Centre',
+    nameBn: 'পপুলার ডায়াগনস্টিক সেন্টার',
+    slug: 'popular-diagnostic',
+    type: 'Diagnostic',
+    description: 'One of the largest diagnostic chains in Bangladesh with branches across the country, providing accurate pathology and imaging services.',
+    phone: '01713383000',
+    email: 'info@populardiagnostic.com',
+    website: 'https://www.populardiagnostic.com',
+    address: 'House 16, Road 2, Dhanmondi, Dhaka-1205',
+    districtId: 'dist-dhaka',
+    district: DHAKA_DISTRICT,
+    isEmergency: false,
+    emergencyPhone: undefined,
+    bedCount: 0,
+    establishedYear: 1983,
+    isVerified: true,
+    isFeatured: false,
+    isActive: true,
+    rating: 4.2,
+    reviewCount: 876,
+    departments: ['Pathology', 'Radiology', 'Cardiology', 'Endoscopy'],
+    photos: [],
+    logo: undefined,
+    coverImage: undefined,
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+  },
+  {
+    id: 'h-mugda',
+    name: 'Mugda Medical College Hospital',
+    nameBn: 'মুগদা মেডিকেল কলেজ হাসপাতাল',
+    slug: 'mugda-medical-college-hospital',
+    type: 'Government',
+    description: 'A prominent government teaching hospital in Mugda, Dhaka, providing affordable healthcare to thousands of patients daily.',
+    phone: '02-9885091',
+    email: '',
+    website: '',
+    address: 'Mugda, Dhaka-1214',
+    districtId: 'dist-dhaka',
+    district: DHAKA_DISTRICT,
+    isEmergency: true,
+    emergencyPhone: '999',
+    bedCount: 500,
+    establishedYear: 2014,
+    isVerified: true,
+    isFeatured: false,
+    isActive: true,
+    rating: 3.9,
+    reviewCount: 542,
+    departments: ['Medicine', 'Surgery', 'Pediatrics', 'Gynecology', 'Emergency'],
+    photos: [],
+    logo: undefined,
+    coverImage: undefined,
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+  },
+  {
+    id: 'h-ibn-sina',
+    name: 'Ibn Sina Hospital',
+    nameBn: 'ইবনে সিনা হাসপাতাল',
+    slug: 'ibn-sina-hospital',
+    type: 'Private',
+    description: 'A well-reputed private hospital in Mirpur, Dhaka with comprehensive diagnostic and treatment facilities at an accessible price point.',
+    phone: '01713456789',
+    email: 'info@ibnsina.net',
+    website: 'https://ibnsina.net',
+    address: 'House 48, Road 9/A, Sector 7, Mirpur-11, Dhaka-1216',
+    districtId: 'dist-dhaka',
+    district: DHAKA_DISTRICT,
+    isEmergency: true,
+    emergencyPhone: '01713456789',
+    bedCount: 250,
+    establishedYear: 1983,
+    isVerified: true,
+    isFeatured: false,
+    isActive: true,
+    rating: 4.3,
+    reviewCount: 764,
+    departments: ['Medicine', 'Cardiology', 'Surgery', 'Gynecology', 'Pediatrics'],
+    photos: [],
+    logo: undefined,
+    coverImage: undefined,
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+  },
+];
+
+// ─── Mock appointments ─────────────────────────────────────
+
+export const MOCK_APPOINTMENTS = [
+  {
+    id: 'apt-001',
+    appointmentNumber: 'DHB-2025-A1B2C3D4',
+    doctorId: 'doc-001',
+    doctor: {
+      id: 'doc-001',
+      name: 'Dr. Aminul Islam',
+      photo: 'https://api.dicebear.com/8.x/avataaars/svg?seed=aminul&backgroundColor=b6e3f4',
+      slug: 'dr-aminul-islam',
+      specialties: [{ id: 'ds-001', specialtyId: 'cardiology', isPrimary: true, specialty: { id: 'cardiology', name: 'Cardiology', nameBn: 'হৃদরোগ বিশেষজ্ঞ', slug: 'cardiology' } }],
+    },
+    type: 'IN_PERSON' as const,
+    status: 'CONFIRMED' as const,
+    appointmentDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+    slotTime: '10:00',
+    patientName: 'Rahul Ahmed',
+    patientPhone: '01712345678',
+    consultationFee: 1500,
+    platformFee: 75,
+    totalAmount: 1575,
+    paymentStatus: 'COMPLETED' as const,
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'apt-002',
+    appointmentNumber: 'DHB-2025-E5F6G7H8',
+    doctorId: 'doc-006',
+    doctor: {
+      id: 'doc-006',
+      name: 'Dr. Abul Kalam Azad',
+      photo: 'https://api.dicebear.com/8.x/avataaars/svg?seed=azad&backgroundColor=bfdbfe',
+      slug: 'dr-abul-kalam-azad',
+      specialties: [{ id: 'ds-006', specialtyId: 'neurology', isPrimary: true, specialty: { id: 'neurology', name: 'Neurology', nameBn: 'নিউরোলজি', slug: 'neurology' } }],
+    },
+    type: 'TELEMEDICINE' as const,
+    status: 'COMPLETED' as const,
+    appointmentDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+    slotTime: '11:00',
+    patientName: 'Rahul Ahmed',
+    patientPhone: '01712345678',
+    consultationFee: 2500,
+    platformFee: 125,
+    totalAmount: 2625,
+    paymentStatus: 'COMPLETED' as const,
+    createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+    updatedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: 'apt-003',
+    appointmentNumber: 'DHB-2025-I9J0K1L2',
+    doctorId: 'doc-002',
+    doctor: {
+      id: 'doc-002',
+      name: 'Dr. Nasrin Akter',
+      photo: 'https://api.dicebear.com/8.x/avataaars/svg?seed=nasrin&backgroundColor=ffd5dc',
+      slug: 'dr-nasrin-akter',
+      specialties: [{ id: 'ds-002', specialtyId: 'gynecology', isPrimary: true, specialty: { id: 'gynecology', name: 'Gynecology', nameBn: 'গাইনি বিশেষজ্ঞ', slug: 'gynecology' } }],
+    },
+    type: 'IN_PERSON' as const,
+    status: 'PENDING' as const,
+    appointmentDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
+    slotTime: '09:30',
+    patientName: 'Sadia Rahman',
+    patientPhone: '01798765432',
+    consultationFee: 1200,
+    platformFee: 60,
+    totalAmount: 1260,
+    paymentStatus: 'PENDING' as const,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+];
+// ─── ADD THIS TO THE BOTTOM OF YOUR EXISTING mockData.ts ────
+// apps/web/src/lib/mockData.ts  (append only — don't replace anything above)
+
+export interface FilterParams {
+  q?: string;
+  specialty?: string;
+  district?: string;
+  gender?: string;
+  online?: string;
+  sortBy?: string;
+}
+
+export function filterDoctors(params: FilterParams) {
+  let result = [...MOCK_DOCTORS];
+
+  // Text search — name, specialty, qualifications
+  if (params.q) {
+    const q = params.q.toLowerCase();
+    result = result.filter((d) =>
+      d.name.toLowerCase().includes(q) ||
+      d.nameBn?.includes(q) ||
+      d.specialties.some((s) =>
+        s.specialty.name.toLowerCase().includes(q) ||
+        s.specialty.nameBn.includes(q)
+      ) ||
+      d.qualifications.some((qual) =>
+        qual.degree.toLowerCase().includes(q) ||
+        qual.institution.toLowerCase().includes(q)
+      )
+    );
+  }
+
+  // Specialty — matches slug
+  if (params.specialty) {
+    result = result.filter((d) =>
+      d.specialties.some((s) => s.specialty.slug === params.specialty)
+    );
+  }
+
+  // District — matches slug
+  if (params.district) {
+    result = result.filter((d) => d.district?.slug === params.district);
+  }
+
+  // Gender
+  if (params.gender && params.gender !== 'all') {
+    result = result.filter((d) => d.gender.toLowerCase() === params.gender!.toLowerCase());
+  }
+
+  // Online only
+  if (params.online === 'true') {
+    result = result.filter((d) => d.isAvailableOnline);
+  }
+
+  // Sort
+  switch (params.sortBy) {
+    case 'rating':
+      result.sort((a, b) => b.rating - a.rating);
+      break;
+    case 'experience':
+      result.sort((a, b) => b.experience - a.experience);
+      break;
+    case 'fee_low':
+      result.sort((a, b) => a.consultationFee - b.consultationFee);
+      break;
+    case 'fee_high':
+      result.sort((a, b) => b.consultationFee - a.consultationFee);
+      break;
+    default:
+      // relevance: sponsored first, then featured, then rating
+      result.sort((a, b) => {
+        if (a.sponsoredRank && b.sponsoredRank) return a.sponsoredRank - b.sponsoredRank;
+        if (a.sponsoredRank) return -1;
+        if (b.sponsoredRank) return 1;
+        if (a.isFeatured && !b.isFeatured) return -1;
+        if (!a.isFeatured && b.isFeatured) return 1;
+        return b.rating - a.rating;
+      });
+  }
+
+  return result;
+}
+export const ALL_DOCTORS = MOCK_DOCTORS;
+
+export const HOSPITAL_DEPARTMENT_DOCTORS: Record<string, Record<string, string[]>> = {
+  'h-001': {
+    'Cardiology':              ['doc-001'],
+    'Neurology':               ['doc-006'],
+    'Orthopedics':             ['doc-004'],
+    'Pediatrics':              ['doc-003'],
+    'Gynecology & Obstetrics': ['doc-002'],
+    'Ophthalmology':           ['doc-005'],
+    'Dermatology':             ['doc-008'],
+    'Endocrinology':           ['doc-007'],
+    'Psychiatry':              ['doc-009'],
+  },
+  'h-002': {
+    'Cardiology':  ['doc-001'],
+    'Neurology':   ['doc-006'],
+    'Nephrology & Dialysis': ['doc-012'],
+    'Pediatrics':  ['doc-003'],
+  },
+  'h-003': {
+    'Cardiology':  ['doc-001'],
+    'Orthopedics': ['doc-004'],
+    'Psychiatry':  ['doc-009'],
+  },
+};
+
+export function getDoctorsByHospitalAndDepartment(
+  hospitalId: string,
+  departmentName: string
+) {
+  const deptMap = HOSPITAL_DEPARTMENT_DOCTORS[hospitalId] ?? {};
+  const doctorIds = deptMap[departmentName] ?? [];
+  return MOCK_DOCTORS.filter(d => doctorIds.includes(d.id));
+}
