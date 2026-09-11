@@ -23,7 +23,7 @@ export default function Navbar() {
   const [scrolled, setScrolled]   = useState(false);
   const [menuOpen, setMenuOpen]   = useState(false);
 
-  const isHome = pathname === '/';
+  const isHome = false;
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 20);
@@ -127,7 +127,7 @@ export default function Navbar() {
   </SignInButton>
 
   <SignUpButton mode="modal">
-    <button className="hidden sm:flex items-center gap-1.5 text-sm font-semibold px-3.5 py-2 rounded-xl bg-brand-700 text-white hover:bg-brand-600 transition-colors shadow-brand">
+    <button className="hidden sm:flex items-center gap-1.5 text-sm font-semibold px-3.5 py-2 rounded-xl bg-sky-600 text-white hover:bg-sky-700 transition-colors shadow-lg shadow-sky-600/20">
       <UserPlus className="w-3.5 h-3.5" />
       Register
     </button>
@@ -201,7 +201,7 @@ export default function Navbar() {
     </button>
   </SignInButton>
   <SignUpButton mode="modal">
-    <button className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-brand-700 text-white text-sm font-semibold hover:bg-brand-600 transition-colors">
+    <button className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-sky-600 text-white text-sm font-semibold hover:bg-sky-700 transition-colors">
       <UserPlus className="w-4 h-4" />Register Free
     </button>
   </SignUpButton>
