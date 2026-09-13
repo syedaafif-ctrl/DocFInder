@@ -105,6 +105,13 @@ export default function SignInPage() {
                 Back to Home
               </Link>
             </div>
+
+            <p className="text-center text-xs text-slate-500 pt-3 border-t border-slate-100">
+              Don't have an account?{' '}
+              <Link href="/sign-up" className="text-teal-600 font-medium hover:underline">
+                Register Free
+              </Link>
+            </p>
           </form>
         </div>
       </div>
