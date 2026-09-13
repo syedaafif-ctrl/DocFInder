@@ -10,6 +10,7 @@ import databaseConfig from './config/database.config';
 import jwtConfig from './config/jwt.config';
 import { DoctorsModule } from './modules/doctors/doctors.module';
 import { HospitalsModule } from './modules/hospitals/hospitals.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -18,7 +19,10 @@ import { HospitalsModule } from './modules/hospitals/hospitals.module';
       load: [appConfig, databaseConfig, jwtConfig],
       envFilePath: ['.env', '.env.local'],
     }),
-    PrismaModule, DoctorsModule, HospitalsModule,
+    PrismaModule,
+    AuthModule,
+    DoctorsModule,
+    HospitalsModule,
     // Feature modules land here as they're built:
     // DoctorsModule, HospitalsModule, AppointmentsModule, AuthModule, ...
   ],

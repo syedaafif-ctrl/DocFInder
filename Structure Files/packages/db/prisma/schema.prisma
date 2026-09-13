@@ -229,6 +229,7 @@ model User {
   id                   String              @id @default(cuid())
   clerkId              String?             @unique @map("clerk_id")
   email                String              @unique
+  password             String?
   phone                String?             @unique
   name                 String
   nameBn               String?             @map("name_bn")

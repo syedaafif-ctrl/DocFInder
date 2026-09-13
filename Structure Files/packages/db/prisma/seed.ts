@@ -551,6 +551,7 @@ const adminUser = await prisma.user.create({
     email: 'admin@swasthabd.com',
     name: 'Super Admin',
     phone: '+8801700000001',
+    password: await bcrypt.hash('Admin@123456', 10),
     role: 'SUPER_ADMIN',
     status: 'ACTIVE',
     emailVerified: true,

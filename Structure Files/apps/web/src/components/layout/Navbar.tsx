@@ -6,9 +6,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Stethoscope, Search, Menu, X, Phone, LogIn, UserPlus,
-  Building2, Calendar, BookOpen, ChevronDown,
+  Building2, Calendar, BookOpen, ChevronDown, LogOut,
 } from 'lucide-react';
-import { SignInButton, SignUpButton, UserButton, SignedIn, SignedOut } from '@clerk/nextjs'
+import { useAuth } from '@/context/AuthContext';
+import AuthModal from '@/components/auth/AuthModal';
 
 
 const NAV = [
@@ -22,6 +23,8 @@ export default function Navbar() {
   const pathname = usePathname();
   const [scrolled, setScrolled]   = useState(false);
   const [menuOpen, setMenuOpen]   = useState(false);
+  const { user, isAuthenticated, logout, openAuthModal } = useAuth();
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
   const isHome = false;
 
@@ -113,30 +116,75 @@ export default function Navbar() {
                 <Search className="w-4.5 h-4.5" />
               </Link>
 
-              <SignedOut>
-  <SignInButton mode="modal">
-    <button className={[
-      'hidden sm:flex items-center gap-1.5 text-sm font-medium px-3.5 py-2 rounded-xl border transition-all',
-      solid
-        ? 'text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
-        : 'text-white border-white/25 hover:bg-white/10',
-    ].join(' ')}>
-      <LogIn className="w-3.5 h-3.5" />
-      Sign In
-    </button>
-  </SignInButton>
+              {!isAuthenticated ? (
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => openAuthModal('login')}
+                    className={[
+                      'hidden sm:flex items-center gap-1.5 text-sm font-medium px-3.5 py-2 rounded-xl border transition-all',
+                      solid
+                        ? 'text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                        : 'text-white border-white/25 hover:bg-white/10',
+                    ].join(' ')}
+                  >
+                    <LogIn className="w-3.5 h-3.5" />
+                    Sign In
+                  </button>
 
-  <SignUpButton mode="modal">
-    <button className="hidden sm:flex items-center gap-1.5 text-sm font-semibold px-3.5 py-2 rounded-xl bg-sky-600 text-white hover:bg-sky-700 transition-colors shadow-lg shadow-sky-600/20">
-      <UserPlus className="w-3.5 h-3.5" />
-      Register
-    </button>
-  </SignUpButton>
-</SignedOut>
+                  <button
+                    onClick={() => openAuthModal('register')}
+                    className="hidden sm:flex items-center gap-1.5 text-sm font-semibold px-3.5 py-2 rounded-xl bg-teal-600 text-white hover:bg-teal-700 transition-colors shadow-lg shadow-teal-600/20"
+                  >
+                    <UserPlus className="w-3.5 h-3.5" />
+                    Register
+                  </button>
+                </div>
+              ) : (
+                <div className="relative">
+                  <button
+                    onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                    className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-slate-100 transition-colors text-slate-700"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-teal-600 text-white flex items-center justify-center font-bold text-xs shadow-sm">
+                      {user?.name ? user.name.slice(0, 2).toUpperCase() : 'U'}
+                    </div>
+                    <span className="hidden md:block text-xs font-semibold text-slate-800 max-w-[110px] truncate">
+                      {user?.name}
+                    </span>
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                  </button>
 
-<SignedIn>
-  <UserButton afterSignOutUrl="/" />
-</SignedIn>
+                  {userDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                      <div className="px-4 py-2 border-b border-slate-100">
+                        <p className="text-xs font-bold text-slate-800 truncate">{user?.name}</p>
+                        <p className="text-[11px] text-slate-500 truncate">{user?.email}</p>
+                        <span className="inline-block mt-1 text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-200">
+                          {user?.role}
+                        </span>
+                      </div>
+                      <Link
+                        href="/appointments"
+                        onClick={() => setUserDropdownOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+                      >
+                        <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                        My Appointments
+                      </Link>
+                      <button
+                        onClick={() => {
+                          setUserDropdownOpen(false);
+                          logout();
+                        }}
+                        className="w-full flex items-center gap-2 px-4 py-2 text-xs font-medium text-red-600 hover:bg-red-50 transition-colors text-left"
+                      >
+                        <LogOut className="w-3.5 h-3.5 text-red-400" />
+                        Sign Out
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Mobile menu */}
               <button
@@ -194,21 +242,52 @@ export default function Navbar() {
             </nav>
 
             <div className="px-5 py-4 border-t border-slate-100 space-y-2">
-              <SignedOut>
-  <SignInButton mode="modal">
-    <button className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-50 transition-colors">
-      <LogIn className="w-4 h-4" />Sign In
-    </button>
-  </SignInButton>
-  <SignUpButton mode="modal">
-    <button className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-sky-600 text-white text-sm font-semibold hover:bg-sky-700 transition-colors">
-      <UserPlus className="w-4 h-4" />Register Free
-    </button>
-  </SignUpButton>
-</SignedOut>
-<SignedIn>
-  <UserButton afterSignOutUrl="/" />
-</SignedIn>
+              {!isAuthenticated ? (
+                <>
+                  <button
+                    onClick={() => {
+                      setMenuOpen(false);
+                      openAuthModal('login');
+                    }}
+                    className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-50 transition-colors"
+                  >
+                    <LogIn className="w-4 h-4" />
+                    Sign In
+                  </button>
+                  <button
+                    onClick={() => {
+                      setMenuOpen(false);
+                      openAuthModal('register');
+                    }}
+                    className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-teal-600 text-white text-sm font-semibold hover:bg-teal-700 transition-colors shadow-sm"
+                  >
+                    <UserPlus className="w-4 h-4" />
+                    Register Free
+                  </button>
+                </>
+              ) : (
+                <div className="space-y-2">
+                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-full bg-teal-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">
+                      {user?.name ? user.name.slice(0, 2).toUpperCase() : 'U'}
+                    </div>
+                    <div className="overflow-hidden">
+                      <p className="text-sm font-semibold text-slate-800 truncate">{user?.name}</p>
+                      <p className="text-xs text-slate-500 truncate">{user?.email}</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setMenuOpen(false);
+                      logout();
+                    }}
+                    className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-red-200 text-red-600 text-sm font-medium hover:bg-red-50 transition-colors"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Sign Out
+                  </button>
+                </div>
+              )}
               <a href="tel:999" className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm font-medium">
                 <Phone className="w-4 h-4" />Emergency: Call 999
               </a>
@@ -216,6 +295,9 @@ export default function Navbar() {
           </div>
         </div>
       )}
+
+      {/* Global Auth Modal */}
+      <AuthModal />
     </>
   );
 }
