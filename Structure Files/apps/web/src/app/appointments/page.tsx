@@ -16,6 +16,8 @@ import {
   CheckCircle2,
   CalendarCheck,
   ChevronRight,
+  Building2,
+  MapPin,
 } from 'lucide-react';
 import { getMyAppointmentsApi, cancelAppointmentApi } from '@/lib/auth';
 
@@ -240,15 +242,38 @@ export default function AppointmentsPage() {
                               <Stethoscope className="w-6 h-6" />
                             </div>
                             <div>
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-2 flex-wrap">
                                 <h3 className="font-bold text-slate-900 text-sm sm:text-base">
                                   {appt.doctor?.title ? appt.doctor.title + ' ' : ''}
                                   {appt.doctor?.name}
                                 </h3>
+                                {appt.hospital?.name && (
+                                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-md bg-sky-50 text-sky-700 border border-sky-100">
+                                    <Building2 className="w-3 h-3 text-sky-500" />
+                                    {appt.hospital.name}
+                                  </span>
+                                )}
                               </div>
-                              <p className="text-xs text-teal-600 font-medium">
-                                {appt.doctor?.specialties?.[0]?.specialty?.name || 'Specialist'}
-                              </p>
+                              <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
+                                <span className="text-teal-600 font-medium">
+                                  {appt.doctor?.specialties?.[0]?.specialty?.name || 'Specialist'}
+                                </span>
+                                {appt.department?.name && (
+                                  <>
+                                    <span>•</span>
+                                    <span>{appt.department.name}</span>
+                                  </>
+                                )}
+                                {appt.chamber?.name && (
+                                  <>
+                                    <span>•</span>
+                                    <span className="flex items-center gap-0.5 text-slate-600">
+                                      <MapPin className="w-3 h-3 text-slate-400" />
+                                      {appt.chamber.name}
+                                    </span>
+                                  </>
+                                )}
+                              </div>
                             </div>
                           </div>
 

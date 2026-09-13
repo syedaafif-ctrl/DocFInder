@@ -103,6 +103,8 @@ export async function refreshTokenApi(refreshToken: string): Promise<{ accessTok
 export interface CreateAppointmentPayload {
   doctorId: string;
   chamberId?: string;
+  hospitalId?: string;
+  departmentId?: string;
   appointmentDate: string;
   slotTime: string;
   patientName: string;
@@ -113,10 +115,11 @@ export interface CreateAppointmentPayload {
   notes?: string;
 }
 
-export async function getDoctorSlotsApi(doctorId: string, date: string, chamberId?: string) {
+export async function getDoctorSlotsApi(doctorId: string, date: string, chamberId?: string, hospitalId?: string) {
   const url = new URL(API_BASE + '/appointments/doctor/' + doctorId + '/slots');
   url.searchParams.set('date', date);
   if (chamberId) url.searchParams.set('chamberId', chamberId);
+  if (hospitalId) url.searchParams.set('hospitalId', hospitalId);
 
   const res = await fetch(url.toString());
   const data = await res.json();

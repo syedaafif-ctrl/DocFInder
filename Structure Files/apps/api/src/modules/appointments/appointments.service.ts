@@ -34,6 +34,15 @@ export class AppointmentsService {
     return 'SBD-' + year + '-' + random;
   }
 
+  private hashSlotLock(chamberId: string, dateStr: string, slotTime: string): number {
+    const str = `${chamberId}:${dateStr}:${slotTime}`;
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = ((hash << 5) - hash + str.charCodeAt(i)) | 0;
+    }
+    return hash;
+  }
+
   private async resolveDoctor(idOrSlug: string) {
     let doctor = await this.prisma.doctor.findFirst({
       where: {
@@ -47,6 +56,8 @@ export class AppointmentsService {
         chambers: {
           include: {
             schedules: true,
+            hospital: { select: { id: true, name: true, nameBn: true, slug: true } },
+            department: { select: { id: true, name: true, nameBn: true } },
           },
         },
       },
@@ -56,13 +67,29 @@ export class AppointmentsService {
       if (idOrSlug.includes('001') || idOrSlug.toLowerCase().includes('aminul')) {
         doctor = await this.prisma.doctor.findFirst({
           where: { name: { contains: 'Aminul', mode: 'insensitive' } },
-          include: { chambers: { include: { schedules: true } } },
+          include: {
+            chambers: {
+              include: {
+                schedules: true,
+                hospital: { select: { id: true, name: true, nameBn: true, slug: true } },
+                department: { select: { id: true, name: true, nameBn: true } },
+              },
+            },
+          },
         });
       }
       if (!doctor) {
         doctor = await this.prisma.doctor.findFirst({
           where: { status: DoctorStatus.ACTIVE },
-          include: { chambers: { include: { schedules: true } } },
+          include: {
+            chambers: {
+              include: {
+                schedules: true,
+                hospital: { select: { id: true, name: true, nameBn: true, slug: true } },
+                department: { select: { id: true, name: true, nameBn: true } },
+              },
+            },
+          },
         });
       }
     }
@@ -70,7 +97,7 @@ export class AppointmentsService {
     return doctor;
   }
 
-  async getDoctorSlots(doctorId: string, dateStr: string, chamberId?: string) {
+  async getDoctorSlots(doctorId: string, dateStr: string, chamberId?: string, hospitalId?: string) {
     const targetDate = new Date(dateStr);
     if (isNaN(targetDate.getTime())) {
       throw new BadRequestException('Invalid date format. Expected YYYY-MM-DD');
@@ -82,7 +109,17 @@ export class AppointmentsService {
       throw new NotFoundException('Doctor with ID or slug ' + doctorId + ' not found');
     }
 
-    const chamber = (chamberId && doctor.chambers.find((c) => c.id === chamberId))
+    let candidateChambers = doctor.chambers;
+    if (hospitalId) {
+      candidateChambers = candidateChambers.filter(
+        (c) => c.hospitalId === hospitalId || c.hospital?.slug === hospitalId
+      );
+    }
+
+    const chamber = (chamberId && candidateChambers.find((c) => c.id === chamberId))
+      || (chamberId && doctor.chambers.find((c) => c.id === chamberId))
+      || candidateChambers.find((c) => c.isMain)
+      || candidateChambers[0]
       || doctor.chambers.find((c) => c.isMain)
       || doctor.chambers[0];
 
@@ -113,7 +150,14 @@ export class AppointmentsService {
         date: dateStr,
         available: false,
         reason: override.reason || 'Doctor is not available on this date',
-        chamber: { id: chamber.id, name: chamber.name },
+        chamber: {
+          id: chamber.id,
+          name: chamber.name,
+          hospitalId: chamber.hospitalId,
+          hospital: chamber.hospital,
+          departmentId: chamber.departmentId,
+          department: chamber.department,
+        },
         slots: [],
       };
     }
@@ -126,7 +170,14 @@ export class AppointmentsService {
         date: dateStr,
         available: false,
         reason: 'Doctor does not practice at this chamber on ' + dayOfWeek,
-        chamber: { id: chamber.id, name: chamber.name },
+        chamber: {
+          id: chamber.id,
+          name: chamber.name,
+          hospitalId: chamber.hospitalId,
+          hospital: chamber.hospital,
+          departmentId: chamber.departmentId,
+          department: chamber.department,
+        },
         slots: [],
       };
     }
@@ -176,6 +227,10 @@ export class AppointmentsService {
         name: chamber.name,
         address: chamber.address,
         fee: chamber.appointmentFee || doctor.consultationFee,
+        hospitalId: chamber.hospitalId,
+        hospital: chamber.hospital,
+        departmentId: chamber.departmentId,
+        department: chamber.department,
       },
       slots,
     };
@@ -188,7 +243,17 @@ export class AppointmentsService {
       throw new NotFoundException('Doctor with ID or slug ' + createDto.doctorId + ' not found');
     }
 
-    const chamber = (createDto.chamberId && doctor.chambers.find((c) => c.id === createDto.chamberId))
+    let candidateChambers = doctor.chambers;
+    if (createDto.hospitalId) {
+      candidateChambers = candidateChambers.filter(
+        (c) => c.hospitalId === createDto.hospitalId || c.hospital?.slug === createDto.hospitalId
+      );
+    }
+
+    const chamber = (createDto.chamberId && candidateChambers.find((c) => c.id === createDto.chamberId))
+      || (createDto.chamberId && doctor.chambers.find((c) => c.id === createDto.chamberId))
+      || candidateChambers.find((c) => c.isMain)
+      || candidateChambers[0]
       || doctor.chambers.find((c) => c.isMain)
       || doctor.chambers[0];
 
@@ -197,25 +262,17 @@ export class AppointmentsService {
     }
 
     const apptDate = new Date(createDto.appointmentDate);
+    if (isNaN(apptDate.getTime())) {
+      throw new BadRequestException('Invalid appointment date format');
+    }
     const startOfDay = new Date(apptDate.toISOString().split('T')[0]);
     const endOfDay = new Date(startOfDay.getTime() + 24 * 60 * 60 * 1000);
 
-    const existing = await this.prisma.appointment.findFirst({
-      where: {
-        doctorId: doctor.id,
-        chamberId: chamber.id,
-        appointmentDate: {
-          gte: startOfDay,
-          lt: endOfDay,
-        },
-        slotTime: createDto.slotTime,
-        status: { notIn: [AppointmentStatus.CANCELLED] },
-      },
-    });
-
-    if (existing) {
-      throw new ConflictException(
-        'Slot ' + createDto.slotTime + ' on ' + createDto.appointmentDate + ' is already booked. Please choose another time.'
+    const dayOfWeek = DAY_MAP[startOfDay.getDay()];
+    const schedule = chamber.schedules.find((s) => s.day === dayOfWeek && !s.isClosed);
+    if (!schedule) {
+      throw new BadRequestException(
+        'Doctor does not practice at ' + chamber.name + ' on ' + dayOfWeek
       );
     }
 
@@ -224,47 +281,103 @@ export class AppointmentsService {
     const totalAmount = consultationFee + platformFee;
     const appointmentNumber = this.generateAppointmentNumber();
 
-    const appointment = await this.prisma.appointment.create({
-      data: {
-        appointmentNumber,
-        patientId,
-        doctorId: doctor.id,
-        chamberId: chamber.id,
-        type: createDto.type || 'IN_PERSON',
-        status: AppointmentStatus.PENDING,
-        appointmentDate: startOfDay,
-        slotTime: createDto.slotTime,
-        patientName: createDto.patientName,
-        patientPhone: createDto.patientPhone,
-        patientAge: createDto.patientAge,
-        patientGender: createDto.patientGender,
-        symptoms: createDto.symptoms,
-        notes: createDto.notes,
-        consultationFee,
-        platformFee,
-        totalAmount,
-        paymentStatus: PaymentStatus.PENDING,
-      },
-      include: {
-        doctor: {
-          select: {
-            id: true,
-            name: true,
-            title: true,
-            slug: true,
-            photo: true,
-            specialties: {
-              where: { isPrimary: true },
-              include: { specialty: { select: { name: true } } },
+    const hospitalId = chamber.hospitalId || createDto.hospitalId || null;
+    const departmentId = chamber.departmentId || createDto.departmentId || null;
+
+    const lockKey = this.hashSlotLock(chamber.id, createDto.appointmentDate, createDto.slotTime);
+
+    const appointment = await this.prisma.$transaction(async (tx) => {
+      // 1. Concurrency protection: Acquire PostgreSQL advisory transaction lock
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(${lockKey})`;
+
+      // 2. Check for active (non-cancelled) conflicting booking
+      const existing = await tx.appointment.findFirst({
+        where: {
+          doctorId: doctor.id,
+          chamberId: chamber.id,
+          appointmentDate: {
+            gte: startOfDay,
+            lt: endOfDay,
+          },
+          slotTime: createDto.slotTime,
+          status: { notIn: [AppointmentStatus.CANCELLED] },
+        },
+      });
+
+      if (existing) {
+        throw new ConflictException(
+          'Slot ' + createDto.slotTime + ' on ' + createDto.appointmentDate + ' is already booked. Please choose another time.'
+        );
+      }
+
+      // 3. Create appointment atomically
+      const newAppt = await tx.appointment.create({
+        data: {
+          appointmentNumber,
+          patientId,
+          doctorId: doctor.id,
+          chamberId: chamber.id,
+          hospitalId,
+          departmentId,
+          type: createDto.type || 'IN_PERSON',
+          status: AppointmentStatus.PENDING,
+          appointmentDate: startOfDay,
+          slotTime: createDto.slotTime,
+          patientName: createDto.patientName,
+          patientPhone: createDto.patientPhone,
+          patientAge: createDto.patientAge,
+          patientGender: createDto.patientGender,
+          symptoms: createDto.symptoms,
+          notes: createDto.notes,
+          consultationFee,
+          platformFee,
+          totalAmount,
+          paymentStatus: PaymentStatus.PENDING,
+        },
+        include: {
+          doctor: {
+            select: {
+              id: true,
+              name: true,
+              title: true,
+              slug: true,
+              photo: true,
+              specialties: {
+                where: { isPrimary: true },
+                include: { specialty: { select: { name: true } } },
+              },
+            },
+          },
+          chamber: {
+            select: {
+              id: true,
+              name: true,
+              address: true,
+              phone: true,
+            },
+          },
+          hospital: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
+          department: {
+            select: {
+              id: true,
+              name: true,
             },
           },
         },
-      },
-    });
+      });
 
-    await this.prisma.doctor.update({
-      where: { id: doctor.id },
-      data: { totalAppointments: { increment: 1 } },
+      await tx.doctor.update({
+        where: { id: doctor.id },
+        data: { totalAppointments: { increment: 1 } },
+      });
+
+      return newAppt;
     });
 
     this.logger.log('Created appointment ' + appointment.appointmentNumber + ' for patient ' + patientId);
@@ -298,6 +411,27 @@ export class AppointmentsService {
               },
             },
           },
+          chamber: {
+            select: {
+              id: true,
+              name: true,
+              address: true,
+              phone: true,
+            },
+          },
+          hospital: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
+          department: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
         },
         orderBy: [{ appointmentDate: 'desc' }, { slotTime: 'desc' }],
         skip,
@@ -322,6 +456,27 @@ export class AppointmentsService {
         doctor: {
           include: {
             specialties: { include: { specialty: true } },
+          },
+        },
+        chamber: {
+          select: {
+            id: true,
+            name: true,
+            address: true,
+            phone: true,
+          },
+        },
+        hospital: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+        department: {
+          select: {
+            id: true,
+            name: true,
           },
         },
         patient: {

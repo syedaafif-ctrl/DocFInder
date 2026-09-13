@@ -5,7 +5,7 @@ import { X, Stethoscope, Users, Phone, Search, SlidersHorizontal, Loader2 } from
 import type { Doctor, Chamber, HospitalDepartment } from '@/types';
 import { getDoctorsByHospitalAndDepartment } from '@/lib/mockData';
 import DoctorHospitalCard from '@/components/hospitals/DoctorHospitalCard';
-import BookingWidget from '@/components/booking/BookingWidget';
+import BookingModal from '@/components/BookingModal';
 import { cn } from '@/lib/utils';
 
 interface DepartmentDoctorsProps {
@@ -52,8 +52,8 @@ export default function DepartmentDoctors({
       const q = search.toLowerCase();
       return (
         doctor.name.toLowerCase().includes(q) ||
-        doctor.specialties.some(s => s.specialty.name.toLowerCase().includes(q)) ||
-        doctor.qualifications.some(qk => qk.degree.toLowerCase().includes(q))
+        doctor.specialties.some((s: any) => s.specialty.name.toLowerCase().includes(q)) ||
+        doctor.qualifications.some((qk: any) => qk.degree.toLowerCase().includes(q))
       );
     })
     .sort((a, b) => {
@@ -177,12 +177,20 @@ const chamberWithSchedules = {
         </div>
       </div>
 
-      {/* Booking widget */}
+      {/* Canonical Booking Modal */}
       {bookingDoctor && (
-        <BookingWidget
-          doctor={bookingDoctor.doctor}
-          chamber={bookingDoctor.chamber}
-          hospitalName={hospitalName}
+        <BookingModal
+          doctor={bookingDoctor.doctor as any}
+          hospital={{
+            id: hospitalId,
+            name: hospitalName,
+          }}
+          department={{
+            id: department.id,
+            name: department.name,
+          }}
+          initialChamberId={bookingDoctor.chamber.id}
+          isOpen={true}
           onClose={() => setBookingDoctor(null)}
         />
       )}

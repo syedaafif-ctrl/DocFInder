@@ -27,8 +27,22 @@ interface BookingModalProps {
       name: string;
       address: string;
       appointmentFee?: number;
+      hospitalId?: string | null;
+      departmentId?: string | null;
+      hospital?: { id?: string; name?: string; slug?: string } | null;
+      department?: { id?: string; name?: string } | null;
     }>;
   };
+  hospital?: {
+    id: string;
+    name: string;
+    slug?: string;
+  } | null;
+  department?: {
+    id?: string;
+    name: string;
+  } | null;
+  initialChamberId?: string;
   isOpen: boolean;
   onClose: () => void;
   onSuccess?: (appointment: any) => void;
@@ -36,22 +50,39 @@ interface BookingModalProps {
 
 export default function BookingModal({
   doctor,
+  hospital,
+  department,
+  initialChamberId,
   isOpen,
   onClose,
   onSuccess,
 }: BookingModalProps) {
   const { user, token, isAuthenticated, openAuthModal } = useAuth();
 
-  const chambers = doctor.chambers || [];
+  const allChambers = doctor.chambers || [];
+  // If hospital is passed, filter chambers to that hospital if matches exist
+  const hospitalChambers = hospital
+    ? allChambers.filter(
+        (c) =>
+          c.hospitalId === hospital.id ||
+          c.hospital?.id === hospital.id ||
+          (hospital.slug && c.hospital?.slug === hospital.slug)
+      )
+    : allChambers;
+
+  const effectiveChambers = hospitalChambers.length > 0 ? hospitalChambers : allChambers;
+
   const [selectedChamberId, setSelectedChamberId] = useState<string>(
-    chambers[0]?.id || ''
+    initialChamberId || effectiveChambers[0]?.id || ''
   );
 
   useEffect(() => {
-    if (chambers.length > 0 && (!selectedChamberId || !chambers.some((c) => c.id === selectedChamberId))) {
-      setSelectedChamberId(chambers[0].id);
+    if (initialChamberId && effectiveChambers.some((c) => c.id === initialChamberId)) {
+      setSelectedChamberId(initialChamberId);
+    } else if (effectiveChambers.length > 0 && (!selectedChamberId || !effectiveChambers.some((c) => c.id === selectedChamberId))) {
+      setSelectedChamberId(effectiveChambers[0].id);
     }
-  }, [chambers, selectedChamberId]);
+  }, [effectiveChambers, initialChamberId, selectedChamberId]);
 
   const getTomorrowStr = () => {
     const d = new Date();
@@ -88,7 +119,8 @@ export default function BookingModal({
     setSelectedSlot('');
     setError(null);
 
-    getDoctorSlotsApi(doctor.id, date, selectedChamberId || undefined)
+    const hospParam = hospital?.id || undefined;
+    getDoctorSlotsApi(doctor.id, date, selectedChamberId || undefined, hospParam)
       .then((data) => {
         if (active) setSlotsData(data);
       })
@@ -105,7 +137,7 @@ export default function BookingModal({
     return () => {
       active = false;
     };
-  }, [isOpen, doctor.id, date, selectedChamberId]);
+  }, [isOpen, doctor.id, date, selectedChamberId, hospital?.id]);
 
   if (!isOpen) return null;
 
@@ -129,6 +161,8 @@ export default function BookingModal({
         {
           doctorId: doctor.id,
           chamberId: selectedChamberId || undefined,
+          hospitalId: hospital?.id || selectedChamber?.hospitalId || undefined,
+          departmentId: department?.id || selectedChamber?.departmentId || undefined,
           appointmentDate: date,
           slotTime: selectedSlot,
           patientName,
@@ -149,7 +183,7 @@ export default function BookingModal({
     }
   };
 
-  const selectedChamber = chambers.find((c) => c.id === selectedChamberId) || chambers[0];
+  const selectedChamber = effectiveChambers.find((c) => c.id === selectedChamberId) || effectiveChambers[0];
   const fee = selectedChamber?.appointmentFee || doctor.consultationFee;
 
   return (
@@ -197,9 +231,17 @@ export default function BookingModal({
                   <span className="font-semibold text-slate-800">{patientName}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Chamber</span>
-                  <span className="font-semibold text-slate-800">{selectedChamber?.name || 'Main Chamber'}</span>
+                  <span className="text-slate-500">Hospital / Location</span>
+                  <span className="font-semibold text-slate-800">
+                    {hospital?.name || bookedAppointment.hospital?.name || selectedChamber?.hospital?.name || selectedChamber?.name || 'Main Chamber'}
+                  </span>
                 </div>
+                {department?.name && (
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Department</span>
+                    <span className="font-semibold text-slate-800">{department.name}</span>
+                  </div>
+                )}
                 <div className="flex justify-between pt-2 border-t border-slate-200">
                   <span className="text-slate-500">Consultation Fee</span>
                   <span className="font-bold text-teal-700">৳{fee} (Pay at clinic)</span>
@@ -230,22 +272,50 @@ export default function BookingModal({
                 </div>
               )}
 
-              {chambers.length > 1 && (
+              {/* Hospital Lock Display OR Chamber Selection */}
+              {hospital ? (
+                <div className="p-3 bg-sky-50/70 border border-sky-100 rounded-2xl flex items-center justify-between text-xs">
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-sky-600 block">
+                      Practice Location
+                    </span>
+                    <p className="font-bold text-slate-900 mt-0.5">{hospital.name}</p>
+                    {department?.name && (
+                      <p className="text-[11px] text-slate-500">Department: {department.name}</p>
+                    )}
+                  </div>
+                  <span className="text-[10px] font-bold bg-sky-100 text-sky-800 px-2 py-0.5 rounded-full">
+                    Hospital Locked
+                  </span>
+                </div>
+              ) : effectiveChambers.length > 1 ? (
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">Select Chamber</label>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                    Select Practice Location / Chamber
+                  </label>
                   <select
                     value={selectedChamberId}
                     onChange={(e) => setSelectedChamberId(e.target.value)}
                     className="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-600 bg-white"
                   >
-                    {chambers.map((c) => (
+                    {effectiveChambers.map((c) => (
                       <option key={c.id} value={c.id}>
-                        {c.name} — {c.address}
+                        {c.hospital?.name ? `${c.hospital.name} — ` : ''}{c.name} ({c.address}) — ৳{c.appointmentFee || doctor.consultationFee}
                       </option>
                     ))}
                   </select>
                 </div>
-              )}
+              ) : selectedChamber ? (
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">
+                    Practice Location
+                  </span>
+                  <p className="font-bold text-slate-900 mt-0.5">
+                    {selectedChamber.hospital?.name ? `${selectedChamber.hospital.name} — ` : ''}{selectedChamber.name}
+                  </p>
+                  <p className="text-[11px] text-slate-500">{selectedChamber.address}</p>
+                </div>
+              ) : null}
 
               <div>
                 <label className="block text-xs font-medium text-slate-700 mb-1">Select Date</label>
@@ -287,7 +357,7 @@ export default function BookingModal({
                   </div>
                 ) : (
                   <div className="grid grid-cols-4 gap-2 max-h-36 overflow-y-auto p-1">
-                    {slotsData.slots.map((slot) => {
+                    {slotsData.slots.map((slot: { time: string; isBooked: boolean }) => {
                       const isSelected = selectedSlot === slot.time;
                       const isBooked = slot.isBooked;
                       return (
@@ -357,7 +427,7 @@ export default function BookingModal({
                     <label className="block text-[11px] text-slate-600 mb-1">Gender</label>
                     <select
                       value={patientGender}
-                      onChange={(e) => setPatientGender(e.target.value)}
+                      onChange={(e) => setPatientGender(e.target.value as 'MALE' | 'FEMALE' | 'OTHER')}
                       className="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-600 focus:outline-none bg-white"
                     >
                       <option value="MALE">Male</option>

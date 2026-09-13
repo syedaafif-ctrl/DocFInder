@@ -1,4 +1,4 @@
-﻿import {
+import {
   IsString,
   IsNotEmpty,
   IsOptional,
@@ -22,6 +22,16 @@ export class CreateAppointmentDto {
   @IsOptional()
   @IsString()
   chamberId?: string;
+
+  @ApiPropertyOptional({ description: 'ID of the Hospital (optional, derived from chamber)' })
+  @IsOptional()
+  @IsString()
+  hospitalId?: string;
+
+  @ApiPropertyOptional({ description: 'ID of the Department (optional, derived from chamber)' })
+  @IsOptional()
+  @IsString()
+  departmentId?: string;
 
   @ApiPropertyOptional({ enum: AppointmentType, default: AppointmentType.IN_PERSON })
   @IsOptional()

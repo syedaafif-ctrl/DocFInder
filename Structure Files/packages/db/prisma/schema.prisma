@@ -347,6 +347,8 @@ model Hospital {
   departments       HospitalDepartment[]
   openingHours      HospitalOpeningHour[]
   doctors           DoctorHospital[]
+  chambers          DoctorChamber[]
+  appointments      Appointment[]
   reviews           Review[]
   advertisements    Advertisement[]
   subscriptions     Subscription[]
@@ -368,6 +370,8 @@ model HospitalDepartment {
   headDoctor  String?  @map("head_doctor")
   phone       String?
   isActive    Boolean  @default(true) @map("is_active")
+  chambers    DoctorChamber[]
+  appointments Appointment[]
   createdAt   DateTime @default(now()) @map("created_at")
 
   @@index([hospitalId])
@@ -494,6 +498,10 @@ model DoctorChamber {
   id              String            @id @default(cuid())
   doctorId        String            @map("doctor_id")
   doctor          Doctor            @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  hospitalId      String?           @map("hospital_id")
+  hospital        Hospital?         @relation(fields: [hospitalId], references: [id])
+  departmentId    String?           @map("department_id")
+  department      HospitalDepartment? @relation(fields: [departmentId], references: [id])
   name            String
   nameBn          String?           @map("name_bn")
   address         String
@@ -507,10 +515,13 @@ model DoctorChamber {
   isMain          Boolean           @default(false) @map("is_main")
   appointmentFee  Int?              @map("appointment_fee")
   schedules       ChamberSchedule[]
+  appointments    Appointment[]
   createdAt       DateTime          @default(now()) @map("created_at")
   updatedAt       DateTime          @updatedAt @map("updated_at")
 
   @@index([doctorId])
+  @@index([hospitalId])
+  @@index([departmentId])
   @@map("doctor_chambers")
 }
 
@@ -591,45 +602,54 @@ model DoctorMembership {
 // ============================================================
 
 model Appointment {
-  id                String            @id @default(cuid())
-  appointmentNumber String            @unique @map("appointment_number")
-  patientId         String            @map("patient_id")
-  patient           User              @relation("PatientAppointments", fields: [patientId], references: [id])
-  doctorId          String            @map("doctor_id")
-  doctor            Doctor            @relation(fields: [doctorId], references: [id])
-  chamberId         String?           @map("chamber_id")
-  type              AppointmentType   @default(IN_PERSON)
-  status            AppointmentStatus @default(PENDING)
-  appointmentDate   DateTime          @map("appointment_date")
-  slotTime          String            @map("slot_time") // "10:00"
+  id                String              @id @default(cuid())
+  appointmentNumber String              @unique @map("appointment_number")
+  patientId         String              @map("patient_id")
+  patient           User                @relation("PatientAppointments", fields: [patientId], references: [id])
+  doctorId          String              @map("doctor_id")
+  doctor            Doctor              @relation(fields: [doctorId], references: [id])
+  chamberId         String?             @map("chamber_id")
+  chamber           DoctorChamber?      @relation(fields: [chamberId], references: [id])
+  hospitalId        String?             @map("hospital_id")
+  hospital          Hospital?           @relation(fields: [hospitalId], references: [id])
+  departmentId      String?             @map("department_id")
+  department        HospitalDepartment? @relation(fields: [departmentId], references: [id])
+  type              AppointmentType     @default(IN_PERSON)
+  status            AppointmentStatus   @default(PENDING)
+  appointmentDate   DateTime            @map("appointment_date")
+  slotTime          String              @map("slot_time") // "10:00"
   symptoms          String?
   notes             String?
-  consultationNotes String?           @map("consultation_notes")
-  prescriptionUrl   String?           @map("prescription_url")
-  patientName       String            @map("patient_name")
-  patientPhone      String            @map("patient_phone")
-  patientAge        Int?              @map("patient_age")
-  patientGender     Gender?           @map("patient_gender")
-  consultationFee   Int               @map("consultation_fee")
-  platformFee       Int               @default(0) @map("platform_fee")
-  totalAmount       Int               @map("total_amount")
-  paymentStatus     PaymentStatus     @default(PENDING)
-  reminderSent      Boolean           @default(false) @map("reminder_sent")
-  cancelledAt       DateTime?         @map("cancelled_at")
-  cancelReason      String?           @map("cancel_reason")
-  completedAt       DateTime?         @map("completed_at")
-  rescheduledFrom   String?           @map("rescheduled_from")
-  createdAt         DateTime          @default(now()) @map("created_at")
-  updatedAt         DateTime          @updatedAt @map("updated_at")
+  consultationNotes String?             @map("consultation_notes")
+  prescriptionUrl   String?             @map("prescription_url")
+  patientName       String              @map("patient_name")
+  patientPhone      String              @map("patient_phone")
+  patientAge        Int?                @map("patient_age")
+  patientGender     Gender?             @map("patient_gender")
+  consultationFee   Int                 @map("consultation_fee")
+  platformFee       Int                 @default(0) @map("platform_fee")
+  totalAmount       Int                 @map("total_amount")
+  paymentStatus     PaymentStatus       @default(PENDING)
+  reminderSent      Boolean             @default(false) @map("reminder_sent")
+  cancelledAt       DateTime?           @map("cancelled_at")
+  cancelReason      String?             @map("cancel_reason")
+  completedAt       DateTime?           @map("completed_at")
+  rescheduledFrom   String?             @map("rescheduled_from")
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @updatedAt @map("updated_at")
 
   payment           Payment?
   review            Review?
 
   @@index([patientId])
   @@index([doctorId])
+  @@index([chamberId])
+  @@index([hospitalId])
+  @@index([departmentId])
   @@index([appointmentDate])
   @@index([status])
   @@index([appointmentNumber])
+  @@index([doctorId, chamberId, appointmentDate, slotTime])
   @@map("appointments")
 }
 

@@ -17,9 +17,11 @@ export class DoctorsService {
     qualifications: { orderBy: { sortOrder: 'asc' as const }, take: 3 },
     district: { select: { id: true, name: true, nameBn: true, slug: true } },
     chambers: {
-      take: 1,
-      where: { isMain: true },
-      include: { area: { select: { id: true, name: true, nameBn: true } } },
+      include: {
+        area: { select: { id: true, name: true, nameBn: true } },
+        hospital: { select: { id: true, name: true, nameBn: true, slug: true } },
+        department: { select: { id: true, name: true, nameBn: true } },
+      },
     },
   };
 
@@ -27,7 +29,14 @@ export class DoctorsService {
   private readonly DETAIL_INCLUDE = {
     specialties: { include: { specialty: true }, orderBy: { isPrimary: 'desc' as const } },
     qualifications: { orderBy: { sortOrder: 'asc' as const } },
-    chambers: { include: { area: true, schedules: true } },
+    chambers: {
+      include: {
+        area: true,
+        schedules: true,
+        hospital: { select: { id: true, name: true, nameBn: true, slug: true } },
+        department: { select: { id: true, name: true, nameBn: true } },
+      },
+    },
     hospitals: {
       where: { isActive: true },
       include: { hospital: { select: { id: true, name: true, slug: true, logo: true, type: true } } },

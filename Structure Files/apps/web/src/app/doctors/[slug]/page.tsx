@@ -58,6 +58,7 @@ function Section({ title, icon: Icon, children }: {
 export default function DoctorProfilePage({ params }: PageProps) {
   const { slug } = use(params);
   const [bookingModalOpen, setBookingModalOpen] = useState(false);
+  const [activeBookingChamber, setActiveBookingChamber] = useState<any>(null);
 
   // Try detail first, fall back to list item
   const detail = MOCK_DOCTOR_DETAIL[slug];
@@ -241,7 +242,7 @@ export default function DoctorProfilePage({ params }: PageProps) {
               {doc.qualifications && doc.qualifications.length > 0 && (
                 <Section title="Education & Qualifications" icon={GraduationCap}>
                   <div className="flex flex-col gap-3">
-                    {doc.qualifications.map((q, i) => {
+                    {doc.qualifications.map((q: any, i: number) => {
                       const degree = (q as any).degree;
                       const institution = (q as any).institution;
                       const year = (q as any).year;
@@ -262,61 +263,94 @@ export default function DoctorProfilePage({ params }: PageProps) {
                 </Section>
               )}
 
-              {/* Chamber & Schedule */}
-              {mainChamber && (
-                <Section title="Chamber & Schedule" icon={Calendar}>
-                  <div className="flex flex-col gap-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-xl bg-sky-50 flex items-center justify-center shrink-0">
-                        <MapPin className="w-4 h-4 text-sky-500" />
-                      </div>
-                      <div>
-                        <p className="font-semibold text-slate-900 text-sm">{mainChamber.name}</p>
-                        <p className="text-slate-500 text-xs mt-0.5">{mainChamber.address}</p>
-                        {(mainChamber as any).phone && (
-                          <p className="text-slate-500 text-xs mt-0.5">📞 {(mainChamber as any).phone}</p>
-                        )}
-                      </div>
-                    </div>
+              {/* Practice Locations & Schedules */}
+              {doc.chambers && doc.chambers.length > 0 && (
+                <Section title="Practice Locations & Schedules" icon={Calendar}>
+                  <div className="flex flex-col gap-6 divide-y divide-slate-100">
+                    {doc.chambers.map((chamber: any, idx: number) => {
+                      const cDays = chamber.schedules
+                        ? DAY_ORDER.filter((day) =>
+                            chamber.schedules!.some((s: any) => s.day === day && !s.isClosed)
+                          )
+                        : [];
+                      const cFee = chamber.appointmentFee || doc.consultationFee;
 
-                    {/* Available days */}
-                    {availableDays.length > 0 && (
-                      <div>
-                        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Available Days</p>
-                        <div className="flex flex-wrap gap-2">
-                          {DAY_ORDER.map((day) => {
-                            const schedule = mainChamber.schedules?.find((s) => s.day === day);
-                            const isOpen = schedule && !schedule.isClosed;
-                            return (
-                              <div
-                                key={day}
-                                className={cn(
-                                  'flex flex-col items-center px-3 py-2 rounded-xl text-xs font-medium border',
-                                  isOpen
-                                    ? 'bg-sky-50 text-sky-700 border-sky-200'
-                                    : 'bg-slate-50 text-slate-300 border-slate-100'
-                                )}
-                              >
-                                <span>{DAY_SHORT[day]}</span>
-                                {isOpen && schedule && (
-                                  <span className="text-[10px] text-sky-500 mt-0.5">
-                                    {schedule.startTime}–{schedule.endTime}
-                                  </span>
+                      return (
+                        <div key={chamber.id || idx} className={cn("flex flex-col gap-3", idx > 0 && "pt-5")}>
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex items-start gap-3">
+                              <div className="w-9 h-9 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center shrink-0 mt-0.5">
+                                <Building2 className="w-4 h-4" />
+                              </div>
+                              <div>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <p className="font-bold text-slate-900 text-sm">{chamber.hospital?.name || chamber.name}</p>
+                                  {chamber.hospital && (
+                                    <span className="text-[10px] bg-sky-50 text-sky-700 px-2 py-0.5 rounded-md font-semibold border border-sky-100">
+                                      {chamber.name}
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-slate-500 text-xs mt-0.5 flex items-center gap-1">
+                                  <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
+                                  {chamber.address}
+                                </p>
+                                {chamber.department?.name && (
+                                  <p className="text-slate-500 text-xs mt-0.5">
+                                    Department: <span className="font-medium text-slate-700">{chamber.department.name}</span>
+                                  </p>
                                 )}
                               </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
+                            </div>
+                            <button
+                              onClick={() => {
+                                setActiveBookingChamber(chamber);
+                                setBookingModalOpen(true);
+                              }}
+                              className="shrink-0 px-3.5 py-1.5 bg-teal-50 hover:bg-teal-100 text-teal-700 text-xs font-bold rounded-xl transition-colors border border-teal-200"
+                            >
+                              Book Here
+                            </button>
+                          </div>
 
-                    {/* Fee */}
-                    {mainChamber.appointmentFee && (
-                      <div className="flex items-center justify-between bg-slate-50 rounded-xl px-4 py-3">
-                        <span className="text-sm text-slate-600">Consultation Fee</span>
-                        <span className="font-bold text-slate-900">৳{mainChamber.appointmentFee.toLocaleString()}</span>
-                      </div>
-                    )}
+                          {/* Available days */}
+                          {cDays.length > 0 && (
+                            <div className="mt-1">
+                              <div className="flex flex-wrap gap-1.5">
+                                {DAY_ORDER.map((day) => {
+                                  const schedule = chamber.schedules?.find((s: any) => s.day === day);
+                                  const isOpen = schedule && !schedule.isClosed;
+                                  return (
+                                    <div
+                                      key={day}
+                                      className={cn(
+                                        'flex flex-col items-center px-2.5 py-1 rounded-lg text-[11px] font-medium border',
+                                        isOpen
+                                          ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                                          : 'bg-slate-50 text-slate-300 border-slate-100'
+                                      )}
+                                    >
+                                      <span>{DAY_SHORT[day]}</span>
+                                      {isOpen && schedule && (
+                                        <span className="text-[9px] text-emerald-600">
+                                          {schedule.startTime}–{schedule.endTime}
+                                        </span>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Fee */}
+                          <div className="flex items-center justify-between bg-slate-50/70 rounded-xl px-3 py-2 text-xs">
+                            <span className="text-slate-600">Location Consultation Fee</span>
+                            <span className="font-bold text-slate-900">৳{cFee.toLocaleString()}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </Section>
               )}
@@ -446,7 +480,7 @@ export default function DoctorProfilePage({ params }: PageProps) {
                     {doc.languages && (
                       <div className="flex items-center gap-2 text-xs text-slate-500">
                         <Globe className="w-3.5 h-3.5 text-sky-500 shrink-0" />
-                        Speaks: {doc.languages.map((l) => l === 'bn' ? 'Bengali' : 'English').join(', ')}
+                        Speaks: {doc.languages.map((l: string) => l === 'bn' ? 'Bengali' : 'English').join(', ')}
                       </div>
                     )}
                   </div>
@@ -476,8 +510,14 @@ export default function DoctorProfilePage({ params }: PageProps) {
       </main>
       <BookingModal
         doctor={doc as any}
+        hospital={activeBookingChamber?.hospital || null}
+        department={activeBookingChamber?.department || null}
+        initialChamberId={activeBookingChamber?.id || undefined}
         isOpen={bookingModalOpen}
-        onClose={() => setBookingModalOpen(false)}
+        onClose={() => {
+          setBookingModalOpen(false);
+          setActiveBookingChamber(null);
+        }}
       />
       <Footer />
     </>

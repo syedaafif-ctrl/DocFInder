@@ -1,27 +1,21 @@
 'use client';
 
-// BookingWidget.tsx
-// Inline booking widget: shows a small calendar → slot grid → patient details form
-// Used inside the hospital detail page after clicking "Book" on a doctor card.
+import React from 'react';
+import BookingModal from '@/components/BookingModal';
 
-import { useState, useMemo } from 'react';
-import {
-  X, ChevronLeft, ChevronRight, Clock, Calendar,
-  User, Phone, CheckCircle2, Loader2, AlertCircle
-} from 'lucide-react';
-import {
-  type Doctor, type DoctorChamber, type ChamberSchedule,
-  generateSlots, formatTime, DAY_FULL, type DayOfWeek
-} from '@/data/hospital_data';
-import { cn } from '@/lib/utils';
-
-interface BookingWidgetProps {
-  doctor: Doctor;
-  chamber: DoctorChamber;
-  hospitalName: string;
-  onClose: () => void;
+export default function BookingWidget(props: any) {
+  return (
+    <BookingModal
+      doctor={props.doctor}
+      hospital={props.hospitalName ? { id: props.chamber?.hospitalId || '', name: props.hospitalName } : null}
+      initialChamberId={props.chamber?.id}
+      isOpen={true}
+      onClose={props.onClose}
+    />
+  );
 }
 
+// ─── Legacy stub kept for backward compatibility ──────────────────────────────
 type Step = 'slot' | 'details' | 'confirm' | 'success';
 
 const DAYS_SHORT: DayOfWeek[] = ['SAT', 'SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI'];

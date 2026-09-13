@@ -483,6 +483,8 @@ async function main() {
       { hospitalId: unitedHospital.id, name: 'Oncology', nameBn: 'ক্যান্সার বিভাগ' },
       { hospitalId: unitedHospital.id, name: 'Nephrology', nameBn: 'কিডনি বিভাগ' },
       { hospitalId: unitedHospital.id, name: 'ICU', nameBn: 'আইসিইউ' },
+      // Evercare departments
+      { hospitalId: everCareHospital.id, name: 'Cardiology', nameBn: 'হৃদরোগ বিভাগ' },
       // Ibn Sina Mirpur departments
       { hospitalId: ibnSinaMirpur.id, name: 'Medicine', nameBn: 'মেডিসিন বিভাগ' },
       { hospitalId: ibnSinaMirpur.id, name: 'Cardiology', nameBn: 'হৃদরোগ বিভাগ' },
@@ -1134,6 +1136,13 @@ const adminUser = await prisma.user.create({
       });
     }
 
+    // Link chamber to hospital and department
+    const hospitalDepts = await prisma.hospitalDepartment.findMany({ where: { hospitalId: data.hospital.id } });
+    const matchedDept = hospitalDepts.find(d => 
+      d.name.toLowerCase().includes(data.specialty.name.toLowerCase()) ||
+      data.specialty.name.toLowerCase().includes(d.name.toLowerCase())
+    ) || hospitalDepts[0];
+
     // Create chamber
     const chamber = await prisma.doctorChamber.create({
       data: {
@@ -1146,6 +1155,8 @@ const adminUser = await prisma.user.create({
         longitude: data.area.longitude,
         isMain: true,
         appointmentFee: data.fee,
+        hospitalId: data.hospital.id,
+        departmentId: matchedDept?.id || null,
       },
     });
 
@@ -1175,6 +1186,97 @@ const adminUser = await prisma.user.create({
         isActive: true,
       },
     });
+
+    // Extra hospital chambers for Dr. Aminul Islam
+    if (data.email === 'dr.aminul@swasthabd.com') {
+      // 2. Evercare Hospital Dhaka
+      const evercareDept = await prisma.hospitalDepartment.findFirst({
+        where: { hospitalId: everCareHospital.id, name: 'Cardiology' }
+      });
+      const evercareChamber = await prisma.doctorChamber.create({
+        data: {
+          doctorId: doctor.id,
+          name: 'Evercare Hospital Dhaka — Room 302',
+          nameBn: 'এভারকেয়ার হাসপাতাল - রুম ৩০২',
+          address: 'Plot 81, Block E, Bashundhara R/A, Dhaka-1229',
+          areaId: everCareHospital.areaId,
+          phone: '10678',
+          latitude: everCareHospital.latitude,
+          longitude: everCareHospital.longitude,
+          isMain: false,
+          appointmentFee: 2000,
+          hospitalId: everCareHospital.id,
+          departmentId: evercareDept?.id || null,
+        },
+      });
+      for (const day of ['SUNDAY', 'WEDNESDAY'] as DayOfWeek[]) {
+        await prisma.chamberSchedule.create({
+          data: {
+            chamberId: evercareChamber.id,
+            day,
+            startTime: '17:00',
+            endTime: '20:00',
+            slotDuration: 15,
+            maxPatients: 15,
+          },
+        });
+      }
+      await prisma.doctorHospital.upsert({
+        where: { doctorId_hospitalId: { doctorId: doctor.id, hospitalId: everCareHospital.id } },
+        update: { isActive: true, designation: 'Senior Visiting Consultant', department: 'Cardiology' },
+        create: {
+          doctorId: doctor.id,
+          hospitalId: everCareHospital.id,
+          isActive: true,
+          designation: 'Senior Visiting Consultant',
+          department: 'Cardiology',
+        },
+      });
+
+      // 3. United Hospital Limited
+      const unitedDept = await prisma.hospitalDepartment.findFirst({
+        where: { hospitalId: unitedHospital.id, name: 'Cardiology' }
+      });
+      const unitedChamber = await prisma.doctorChamber.create({
+        data: {
+          doctorId: doctor.id,
+          name: 'United Hospital Limited — Cardiology Suite',
+          nameBn: 'ইউনাইটেড হাসপাতাল - কার্ডিওলজি সুইট',
+          address: 'Plot 15, Road 71, Gulshan-2, Dhaka-1212',
+          areaId: unitedHospital.areaId,
+          phone: '10666',
+          latitude: unitedHospital.latitude,
+          longitude: unitedHospital.longitude,
+          isMain: false,
+          appointmentFee: 1800,
+          hospitalId: unitedHospital.id,
+          departmentId: unitedDept?.id || null,
+        },
+      });
+      for (const day of ['MONDAY', 'THURSDAY'] as DayOfWeek[]) {
+        await prisma.chamberSchedule.create({
+          data: {
+            chamberId: unitedChamber.id,
+            day,
+            startTime: '18:00',
+            endTime: '21:00',
+            slotDuration: 15,
+            maxPatients: 15,
+          },
+        });
+      }
+      await prisma.doctorHospital.upsert({
+        where: { doctorId_hospitalId: { doctorId: doctor.id, hospitalId: unitedHospital.id } },
+        update: { isActive: true, designation: 'Visiting Specialist', department: 'Cardiology' },
+        create: {
+          doctorId: doctor.id,
+          hospitalId: unitedHospital.id,
+          isActive: true,
+          designation: 'Visiting Specialist',
+          department: 'Cardiology',
+        },
+      });
+    }
 
     // Add PREMIUM subscription for experienced/featured doctors
     if (data.experience >= 20) {

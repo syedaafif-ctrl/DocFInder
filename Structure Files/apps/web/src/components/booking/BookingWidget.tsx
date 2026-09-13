@@ -1,25 +1,21 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import Image from 'next/image';
-import {
-  X, Calendar, Clock, User, Phone, ChevronLeft, ChevronRight,
-  CheckCircle2, BadgeCheck, MessageCircle, Loader2, AlertCircle,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import type { Doctor, Chamber, ChamberSchedule } from '@/types';
+import React from 'react';
+import BookingModal from '@/components/BookingModal';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-interface BookingWidgetProps {
-  doctor: Doctor;
-  chamber: Chamber;           // hospital-specific chamber
-  hospitalName: string;
-  onClose: () => void;
+export default function BookingWidget(props: any) {
+  return (
+    <BookingModal
+      doctor={props.doctor}
+      hospital={props.hospitalName ? { id: props.chamber?.hospitalId || '', name: props.hospitalName } : null}
+      initialChamberId={props.chamber?.id}
+      isOpen={true}
+      onClose={props.onClose}
+    />
+  );
 }
 
-type Step = 'date' | 'slot' | 'details' | 'confirm' | 'success';
-
-// ─── Constants ────────────────────────────────────────────────────────────────
+// ─── Legacy stub kept for backward compatibility ──────────────────────────────
 const BD_DAYS: Record<string, number> = {
   SUNDAY: 0, MONDAY: 1, TUESDAY: 2, WEDNESDAY: 3,
   THURSDAY: 4, FRIDAY: 5, SATURDAY: 6,

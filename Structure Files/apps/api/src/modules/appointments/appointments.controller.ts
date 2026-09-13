@@ -1,4 +1,4 @@
-﻿import {
+import {
   Controller,
   Get,
   Post,
@@ -31,8 +31,9 @@ export class AppointmentsController {
     @Param('doctorId') doctorId: string,
     @Query('date') date: string,
     @Query('chamberId') chamberId?: string,
+    @Query('hospitalId') hospitalId?: string,
   ) {
-    return this.appointmentsService.getDoctorSlots(doctorId, date, chamberId);
+    return this.appointmentsService.getDoctorSlots(doctorId, date, chamberId, hospitalId);
   }
 
   @Post()
