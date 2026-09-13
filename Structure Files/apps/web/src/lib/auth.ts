@@ -98,3 +98,76 @@ export async function refreshTokenApi(refreshToken: string): Promise<{ accessTok
 
   return res.json();
 }
+
+// Appointments API Client
+export interface CreateAppointmentPayload {
+  doctorId: string;
+  chamberId?: string;
+  appointmentDate: string;
+  slotTime: string;
+  patientName: string;
+  patientPhone: string;
+  patientAge?: number;
+  patientGender?: 'MALE' | 'FEMALE' | 'OTHER';
+  symptoms?: string;
+  notes?: string;
+}
+
+export async function getDoctorSlotsApi(doctorId: string, date: string, chamberId?: string) {
+  const url = new URL(API_BASE + '/appointments/doctor/' + doctorId + '/slots');
+  url.searchParams.set('date', date);
+  if (chamberId) url.searchParams.set('chamberId', chamberId);
+
+  const res = await fetch(url.toString());
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Failed to load available slots');
+  return data;
+}
+
+export async function bookAppointmentApi(payload: CreateAppointmentPayload, token: string) {
+  const res = await fetch(API_BASE + '/appointments', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ' + token,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    const errorMsg = Array.isArray(data.message) ? data.message.join(', ') : data.message;
+    throw new Error(errorMsg || 'Failed to book appointment');
+  }
+  return data;
+}
+
+export async function getMyAppointmentsApi(token: string, status?: string) {
+  const url = new URL(API_BASE + '/appointments/my');
+  if (status) url.searchParams.set('status', status);
+
+  const res = await fetch(url.toString(), {
+    headers: {
+      Authorization: 'Bearer ' + token,
+    },
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Failed to load appointments');
+  return data;
+}
+
+export async function cancelAppointmentApi(id: string, reason: string, token: string) {
+  const res = await fetch(API_BASE + '/appointments/' + id + '/cancel', {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ' + token,
+    },
+    body: JSON.stringify({ reason }),
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Failed to cancel appointment');
+  return data;
+}

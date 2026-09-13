@@ -3,7 +3,7 @@
 // apps/web/src/app/doctors/[slug]/page.tsx
 
 import { notFound } from 'next/navigation';
-import { use } from 'react';
+import { use, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import BookingModal from '@/components/BookingModal';
 import { MOCK_DOCTORS, MOCK_DOCTOR_DETAIL } from '@/lib/mockData';
 import { cn } from '@/lib/utils';
 
@@ -56,6 +57,7 @@ function Section({ title, icon: Icon, children }: {
 // ─── Page ─────────────────────────────────────────────────────
 export default function DoctorProfilePage({ params }: PageProps) {
   const { slug } = use(params);
+  const [bookingModalOpen, setBookingModalOpen] = useState(false);
 
   // Try detail first, fall back to list item
   const detail = MOCK_DOCTOR_DETAIL[slug];
@@ -362,7 +364,10 @@ export default function DoctorProfilePage({ params }: PageProps) {
 
                   {/* CTA buttons */}
                   <div className="flex flex-col gap-3">
-                    <button className="w-full flex items-center justify-center gap-2 bg-sky-600 hover:bg-sky-700 text-white font-semibold py-3 rounded-xl transition-colors text-sm">
+                    <button
+                      onClick={() => setBookingModalOpen(true)}
+                      className="w-full flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3 rounded-xl transition-colors text-sm shadow-md shadow-teal-600/20"
+                    >
                       <Calendar className="w-4 h-4" />
                       Book In-Person Visit
                     </button>
@@ -440,6 +445,11 @@ export default function DoctorProfilePage({ params }: PageProps) {
           </div>
         </div>
       </main>
+      <BookingModal
+        doctor={doc as any}
+        isOpen={bookingModalOpen}
+        onClose={() => setBookingModalOpen(false)}
+      />
       <Footer />
     </>
   );

@@ -11,6 +11,7 @@ import jwtConfig from './config/jwt.config';
 import { DoctorsModule } from './modules/doctors/doctors.module';
 import { HospitalsModule } from './modules/hospitals/hospitals.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { AppointmentsModule } from './modules/appointments/appointments.module';
 
 @Module({
   imports: [
@@ -23,8 +24,7 @@ import { AuthModule } from './modules/auth/auth.module';
     AuthModule,
     DoctorsModule,
     HospitalsModule,
-    // Feature modules land here as they're built:
-    // DoctorsModule, HospitalsModule, AppointmentsModule, AuthModule, ...
+    AppointmentsModule,
   ],
   controllers: [HealthController],
   providers: [],
