@@ -66,10 +66,23 @@ export class DoctorsService {
   }
 
   async findOne(slug: string) {
-    const doctor = await this.prisma.doctor.findFirst({
+    let doctor = await this.prisma.doctor.findFirst({
       where: { slug, status: DoctorStatus.ACTIVE },
       include: this.DETAIL_INCLUDE,
     });
+
+    if (!doctor) {
+      doctor = await this.prisma.doctor.findFirst({
+        where: {
+          OR: [
+            { slug: { startsWith: slug } },
+            { id: slug },
+          ],
+          status: DoctorStatus.ACTIVE,
+        },
+        include: this.DETAIL_INCLUDE,
+      });
+    }
 
     if (!doctor) throw new NotFoundException(`Doctor with slug "${slug}" not found`);
 
