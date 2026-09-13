@@ -419,8 +419,8 @@ async function main() {
       slug: 'ibn-sina-mirpur',
       type: 'Diagnostic',
       description: 'Ibn Sina Diagnostic & Consultation Center Mirpur branch provides diagnostic and specialist consultation services with a wide panel of experienced physicians.',
-      phone: '09610009621',
-      altPhone: '01886610115',
+      phone: '09610009627',
+      altPhone: '01886610122',
       address: 'House#11, Haji Road, Avenue 3, Rupnagar, Mirpur-2, Dhaka-1216',
       addressBn: 'হাউস#১১, হাজী রোড, অ্যাভিনিউ ৩, রূপনগর, মিরপুর-২, ঢাকা-১২১৬',
       districtId: dhakaDistrict.id,
@@ -448,7 +448,7 @@ async function main() {
       type: 'Diagnostic',
       description: 'Ibn Sina Diagnostic & Consultation Center Chattogram branch offers specialist consultations and diagnostic services in Panchlaish, Chittagong.',
       phone: '09610009622',
-      altPhone: '01886610115',
+      altPhone: '01886610116',
       address: 'H#12/A, Road#02, Katalganj R/A, Panchlaish, Chattogram',
       addressBn: 'হাউস#১২/এ, রোড#০২, কাতালগঞ্জ আর/এ, পাঁচলাইশ, চট্টগ্রাম',
       districtId: chittagongDistrict.id,
@@ -797,7 +797,7 @@ const adminUser = await prisma.user.create({
       bmdcNumber: 'CTG-10001',
       experience: 20,
       fee: 800,
-      phone: '01886610115',
+      phone: '01886610117',
       title: 'Prof.',
       about: 'Professor Dr. Muhammad Habib Hassan holds MBBS, BCS (Health), FCPS (Medicine) and MD (Internal Medicine). He is a Professor at Chattogram Medical College Hospital (Medicine Department). Chamber at Ibn Sina Chattogram, 4th Floor, Room 501. Available Fridays 9:30 AM – 12:00 PM.',
       qualifications: [
@@ -825,7 +825,7 @@ const adminUser = await prisma.user.create({
       bmdcNumber: 'CTG-10002',
       experience: 22,
       fee: 800,
-      phone: '01886610115',
+      phone: '01886610118',
       title: 'Prof.',
       about: 'Professor Dr. Muhammad Salahuddin holds MBBS, FCPS (Medicine) and MD (Nephrology). He is a Professor at Cox\'s Bazar Medical College (Medicine Department). Chamber at Ibn Sina Chattogram, 4th Floor, Room 507. Available Saturday, Tuesday, Wednesday 7:00 PM – 9:00 PM.',
       qualifications: [
@@ -852,7 +852,7 @@ const adminUser = await prisma.user.create({
       bmdcNumber: 'CTG-10003',
       experience: 14,
       fee: 600,
-      phone: '01886610115',
+      phone: '01886610119',
       title: 'Assoc. Prof.',
       about: 'Dr. Md. Kawser Uddin Shouaibe holds MBBS, FCPS (Medicine). He is an Associate Professor in Medicine. Chamber at Ibn Sina Chattogram, 4th Floor, Room 507. Available Sundays and Fridays 7:30 PM – 9:00 PM.',
       qualifications: [
@@ -878,7 +878,7 @@ const adminUser = await prisma.user.create({
       bmdcNumber: 'CTG-10004',
       experience: 25,
       fee: 1000,
-      phone: '01886610115',
+      phone: '01886610120',
       title: 'Prof.',
       about: 'Professor Dr. Md. Atiquel Islam Chowdhury holds MBBS, MCPS, FCPS (Medicine) and MRCP (UK). He is Professor & Head of the Department of Medicine at Southern Medical College & Hospital. Chamber at Ibn Sina Chattogram, 3rd Floor, Room 401. Available Saturday through Thursday 3:45 PM – 6:00 PM.',
       qualifications: [
@@ -906,7 +906,7 @@ const adminUser = await prisma.user.create({
       bmdcNumber: 'CTG-10005',
       experience: 15,
       fee: 700,
-      phone: '01886610115',
+      phone: '01886610121',
       title: 'Assoc. Prof.',
       about: 'Dr. Mohammad Salah Uddin holds MBBS and MD (Neurology) from BSMMU. He is an Associate Professor in the Department of Neurology/Neuro Medicine at Chittagong Medical College & Hospital. Chamber at Ibn Sina Chattogram, 1st Floor, Room 210. Available Sunday through Thursday 1:00 PM – 2:00 PM.',
       qualifications: [
@@ -934,7 +934,7 @@ const adminUser = await prisma.user.create({
       bmdcNumber: 'MRP-10001',
       experience: 18,
       fee: 600,
-      phone: '09610009621',
+      phone: '09610009622',
       title: 'Dr.',
       about: 'Dr. A. K. Mohammad Ali holds MBBS (DMC), DIH (NIPSOM), FMD (USTC) and CEU (BSU). He is a Family Medicine Specialist and Consultant at Ibn Sina Diagnostic & Consultation Center, Mirpur. Chamber at 3rd Floor, Room 404. Available Sunday through Thursday 11:00 AM – 1:00 PM.',
       qualifications: [
@@ -962,7 +962,7 @@ const adminUser = await prisma.user.create({
       bmdcNumber: 'MRP-10002',
       experience: 20,
       fee: 800,
-      phone: '09610009621',
+      phone: '09610009623',
       title: 'Dr.',
       about: 'Dr. Md. Wahiduzzaman holds MBBS, D-Card and PhD-Fellow (Diabetes, Germany). He is a Cardiac & Diabetes Specialist and Consultant at NHN (Bangladesh Diabetes Society). Chamber at Ibn Sina Mirpur, 2nd Floor, Room 304. Available Saturday through Thursday 7:00 PM – 9:00 PM.',
       qualifications: [
@@ -989,7 +989,7 @@ const adminUser = await prisma.user.create({
       bmdcNumber: 'MRP-10003',
       experience: 25,
       fee: 1000,
-      phone: '09610009621',
+      phone: '09610009624',
       title: 'Prof.',
       about: 'Professor Dr. M. A. Momen Khan holds MBBS and MD (Neurology) from BSMMU. He is a Fellow in Neuro-Intervention & Stroke and Professor at Shaheed Suhrawardy Medical College & Hospital. Chamber at Ibn Sina Mirpur, 3rd Floor, Room 415. Available Saturday through Wednesday 5:30 PM – 7:30 PM.',
       qualifications: [
@@ -1015,7 +1015,7 @@ const adminUser = await prisma.user.create({
       bmdcNumber: 'MRP-10004',
       experience: 28,
       fee: 1000,
-      phone: '09610009621',
+      phone: '09610009625',
       title: 'Prof.',
       about: 'Professor Dr. Mahbuba Akhter Banu holds MBBS, MCPS, DGO and FCPS (Obs & Gynaecology). She is a Professor at Sir Salimullah Medical College, Mitford Hospital. Chamber at Ibn Sina Mirpur, 5th Floor (New Building), Room 601. Available Sunday, Tuesday and Thursday 5:00 PM – 8:00 PM.',
       qualifications: [
@@ -1043,7 +1043,7 @@ const adminUser = await prisma.user.create({
       bmdcNumber: 'MRP-10005',
       experience: 18,
       fee: 900,
-      phone: '09610009621',
+      phone: '09610009626',
       title: 'Assoc. Prof.',
       about: 'Dr. Md. Hasanuzzaman holds MBBS, BCS (Health), MS (Paediatric Surgery) and FACS (USA). He is an Associate Professor at Dhaka Medical College & Hospital (Department of Pediatric Surgery). Chamber at Ibn Sina Mirpur, 4th Floor, Room 509. Available Saturday through Thursday 5:00 PM – 6:00 PM.',
       qualifications: [

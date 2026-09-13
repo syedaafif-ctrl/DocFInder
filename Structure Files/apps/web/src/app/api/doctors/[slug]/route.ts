@@ -3,9 +3,9 @@ import { MOCK_DOCTOR_DETAIL, MOCK_DOCTORS } from '@/lib/mockData';
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
-  const { slug } = params;
+  const { slug } = await params;
 
   // Check full detail map first
   if (MOCK_DOCTOR_DETAIL[slug]) {
