@@ -82,9 +82,9 @@ export class AppointmentsService {
       throw new NotFoundException('Doctor with ID or slug ' + doctorId + ' not found');
     }
 
-    const chamber = chamberId
-      ? doctor.chambers.find((c) => c.id === chamberId)
-      : doctor.chambers.find((c) => c.isMain) || doctor.chambers[0];
+    const chamber = (chamberId && doctor.chambers.find((c) => c.id === chamberId))
+      || doctor.chambers.find((c) => c.isMain)
+      || doctor.chambers[0];
 
     if (!chamber) {
       return {
@@ -100,7 +100,7 @@ export class AppointmentsService {
 
     const override = await this.prisma.availabilityOverride.findFirst({
       where: {
-        doctorId,
+        doctorId: doctor.id,
         date: {
           gte: startOfDay,
           lt: endOfDay,
@@ -141,7 +141,7 @@ export class AppointmentsService {
 
     const bookedAppointments = await this.prisma.appointment.findMany({
       where: {
-        doctorId,
+        doctorId: doctor.id,
         chamberId: chamber.id,
         appointmentDate: {
           gte: startOfDay,
@@ -188,9 +188,9 @@ export class AppointmentsService {
       throw new NotFoundException('Doctor with ID or slug ' + createDto.doctorId + ' not found');
     }
 
-    const chamber = createDto.chamberId
-      ? doctor.chambers.find((c) => c.id === createDto.chamberId)
-      : doctor.chambers.find((c) => c.isMain) || doctor.chambers[0];
+    const chamber = (createDto.chamberId && doctor.chambers.find((c) => c.id === createDto.chamberId))
+      || doctor.chambers.find((c) => c.isMain)
+      || doctor.chambers[0];
 
     if (!chamber) {
       throw new BadRequestException('Chamber is required for appointment');
@@ -202,7 +202,7 @@ export class AppointmentsService {
 
     const existing = await this.prisma.appointment.findFirst({
       where: {
-        doctorId: createDto.doctorId,
+        doctorId: doctor.id,
         chamberId: chamber.id,
         appointmentDate: {
           gte: startOfDay,

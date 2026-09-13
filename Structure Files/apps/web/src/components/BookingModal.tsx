@@ -47,6 +47,12 @@ export default function BookingModal({
     chambers[0]?.id || ''
   );
 
+  useEffect(() => {
+    if (chambers.length > 0 && (!selectedChamberId || !chambers.some((c) => c.id === selectedChamberId))) {
+      setSelectedChamberId(chambers[0].id);
+    }
+  }, [chambers, selectedChamberId]);
+
   const getTomorrowStr = () => {
     const d = new Date();
     d.setDate(d.getDate() + 1);

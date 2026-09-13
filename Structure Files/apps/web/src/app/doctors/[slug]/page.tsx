@@ -3,7 +3,7 @@
 // apps/web/src/app/doctors/[slug]/page.tsx
 
 import { notFound } from 'next/navigation';
-import { use, useState } from 'react';
+import { use, useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -62,23 +62,52 @@ export default function DoctorProfilePage({ params }: PageProps) {
   // Try detail first, fall back to list item
   const detail = MOCK_DOCTOR_DETAIL[slug];
   const listItem = MOCK_DOCTORS.find((d) => d.slug === slug);
-  const doc = detail ?? listItem;
+  const initialDoc = detail ?? listItem;
+
+  const [doc, setDoc] = useState<any>(initialDoc);
+
+  useEffect(() => {
+    let active = true;
+    fetch(`http://localhost:4000/api/v1/doctors/${slug}`)
+      .then((res) => {
+        if (!res.ok) return null;
+        return res.json();
+      })
+      .then((apiData) => {
+        if (active && apiData) {
+          setDoc((prev: any) => ({
+            ...(prev || {}),
+            ...apiData,
+            chambers: apiData.chambers && apiData.chambers.length > 0 ? apiData.chambers : prev?.chambers,
+            specialties: apiData.specialties && apiData.specialties.length > 0 ? apiData.specialties : prev?.specialties,
+            qualifications: apiData.qualifications && apiData.qualifications.length > 0 ? apiData.qualifications : prev?.qualifications,
+          }));
+        }
+      })
+      .catch(() => {
+        // Fallback silently to mock doc
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [slug]);
 
   if (!doc) notFound();
 
-  const primarySpecialty = doc.specialties.find((s) => s.isPrimary) ?? doc.specialties[0];
-  const mainChamber = doc.chambers?.find((c) => c.isMain) ?? doc.chambers?.[0];
+  const primarySpecialty = doc.specialties?.find((s: any) => s.isPrimary) ?? doc.specialties?.[0];
+  const mainChamber = doc.chambers?.find((c: any) => c.isMain) ?? doc.chambers?.[0];
 
   // Available days from schedule
   const availableDays = mainChamber?.schedules
     ? DAY_ORDER.filter((day) =>
-        mainChamber.schedules!.some((s) => s.day === day && !s.isClosed)
+        mainChamber.schedules!.some((s: any) => s.day === day && !s.isClosed)
       )
     : [];
 
   const qualStr = doc.qualifications
     ?.slice(0, 4)
-    .map((q) => ('degree' in q ? q.degree : (q as any).degree))
+    .map((q: any) => ('degree' in q ? q.degree : (q as any).degree))
     .join(', ');
 
   return (
