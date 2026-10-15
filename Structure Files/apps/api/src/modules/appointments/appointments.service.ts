@@ -526,6 +526,11 @@ export class AppointmentsService {
       throw new BadRequestException('Cannot cancel a completed appointment');
     }
 
+    const apptDate = new Date(appointment.appointmentDate);
+    if (apptDate < new Date()) {
+      throw new BadRequestException('Cannot cancel an appointment whose scheduled date has already passed. Please book a new appointment.');
+    }
+
     return this.prisma.appointment.update({
       where: { id },
       data: {

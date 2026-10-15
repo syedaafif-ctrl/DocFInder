@@ -18,15 +18,42 @@ import {
   ChevronRight,
   Building2,
   MapPin,
+  RotateCw,
 } from 'lucide-react';
 import { getMyAppointmentsApi, cancelAppointmentApi } from '@/lib/auth';
 
-const TABS = ['UPCOMING', 'COMPLETED', 'CANCELLED'] as const;
+const TABS = ['UPCOMING', 'EXPIRED', 'COMPLETED', 'CANCELLED'] as const;
+type TabType = (typeof TABS)[number];
+
+function checkIsExpired(appointmentDate: string | Date, slotTime?: string): boolean {
+  try {
+    const apptDate = new Date(appointmentDate);
+    if (isNaN(apptDate.getTime())) return false;
+
+    if (slotTime) {
+      const match = slotTime.match(/(\d+):(\d+)\s*(AM|PM)?/i);
+      if (match) {
+        let hours = parseInt(match[1], 10);
+        const minutes = parseInt(match[2], 10);
+        const meridian = match[3]?.toUpperCase();
+        if (meridian === 'PM' && hours < 12) hours += 12;
+        if (meridian === 'AM' && hours === 12) hours = 0;
+        apptDate.setHours(hours, minutes, 0, 0);
+        return apptDate < new Date();
+      }
+    }
+
+    apptDate.setHours(23, 59, 59, 999);
+    return apptDate < new Date();
+  } catch {
+    return false;
+  }
+}
 
 export default function AppointmentsPage() {
   const { user, token, isAuthenticated, isLoading: authLoading, openAuthModal } = useAuth();
-  const [activeTab, setActiveTab] = useState<'UPCOMING' | 'COMPLETED' | 'CANCELLED'>('UPCOMING');
-  const [appointments, setAppointments] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState<TabType>('UPCOMING');
+  const [allAppointments, setAllAppointments] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,25 +70,45 @@ export default function AppointmentsPage() {
     setLoading(true);
     setError(null);
     try {
-      let queryStatus: string | undefined;
-      if (activeTab === 'UPCOMING') queryStatus = 'PENDING';
-      else if (activeTab === 'COMPLETED') queryStatus = 'COMPLETED';
-      else if (activeTab === 'CANCELLED') queryStatus = 'CANCELLED';
-
-      const res = await getMyAppointmentsApi(token, queryStatus);
-      setAppointments(res.data || []);
+      const res = await getMyAppointmentsApi(token);
+      setAllAppointments(res.data || []);
     } catch (err: any) {
       setError(err.message || 'Failed to fetch appointments');
     } finally {
       setLoading(false);
     }
-  }, [token, activeTab]);
+  }, [token]);
 
   useEffect(() => {
     if (!authLoading) {
       fetchAppointments();
     }
   }, [authLoading, fetchAppointments]);
+
+  const upcomingAppointments = allAppointments.filter(
+    (a) => !checkIsExpired(a.appointmentDate, a.slotTime) && (a.status === 'PENDING' || a.status === 'CONFIRMED')
+  );
+  const expiredAppointments = allAppointments.filter(
+    (a) => checkIsExpired(a.appointmentDate, a.slotTime) && (a.status === 'PENDING' || a.status === 'CONFIRMED')
+  );
+  const completedAppointments = allAppointments.filter((a) => a.status === 'COMPLETED');
+  const cancelledAppointments = allAppointments.filter((a) => a.status === 'CANCELLED');
+
+  const displayedAppointments =
+    activeTab === 'UPCOMING'
+      ? upcomingAppointments
+      : activeTab === 'EXPIRED'
+      ? expiredAppointments
+      : activeTab === 'COMPLETED'
+      ? completedAppointments
+      : cancelledAppointments;
+
+  const tabCounts: Record<TabType, number> = {
+    UPCOMING: upcomingAppointments.length,
+    EXPIRED: expiredAppointments.length,
+    COMPLETED: completedAppointments.length,
+    CANCELLED: cancelledAppointments.length,
+  };
 
   const handleCancelAppointment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,7 +127,15 @@ export default function AppointmentsPage() {
     }
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: string, isExpired: boolean) => {
+    if (isExpired && (status === 'PENDING' || status === 'CONFIRMED')) {
+      return (
+        <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+          <Clock className="w-3 h-3 text-slate-400" /> Expired
+        </span>
+      );
+    }
+
     switch (status) {
       case 'CONFIRMED':
         return (
@@ -167,19 +222,31 @@ export default function AppointmentsPage() {
             </div>
           ) : (
             <>
-              <div className="flex gap-1 bg-slate-200/60 p-1.5 rounded-2xl w-fit mb-6 border border-slate-200/60">
+              <div className="flex flex-wrap gap-1 bg-slate-200/60 p-1.5 rounded-2xl w-fit mb-6 border border-slate-200/60">
                 {TABS.map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
                     className={
-                      'px-4 py-2 text-xs font-bold rounded-xl transition-all ' +
+                      'px-4 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 ' +
                       (activeTab === tab
                         ? 'bg-white text-teal-800 shadow-sm'
                         : 'text-slate-600 hover:text-slate-900')
                     }
                   >
-                    {tab.charAt(0) + tab.slice(1).toLowerCase()}
+                    <span>{tab.charAt(0) + tab.slice(1).toLowerCase()}</span>
+                    {tabCounts[tab] > 0 && (
+                      <span
+                        className={
+                          'text-[10px] px-1.5 py-0.5 rounded-full font-semibold ' +
+                          (activeTab === tab
+                            ? 'bg-teal-50 text-teal-700'
+                            : 'bg-slate-300/70 text-slate-700')
+                        }
+                      >
+                        {tabCounts[tab]}
+                      </span>
+                    )}
                   </button>
                 ))}
               </div>
@@ -196,7 +263,7 @@ export default function AppointmentsPage() {
                   <Loader2 className="w-7 h-7 animate-spin text-teal-600" />
                   <p className="text-xs text-slate-500">Loading your appointments...</p>
                 </div>
-              ) : appointments.length === 0 ? (
+              ) : displayedAppointments.length === 0 ? (
                 <div className="bg-white rounded-3xl border border-slate-100 p-12 text-center shadow-sm">
                   <div className="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto mb-3 text-slate-400">
                     <CalendarCheck className="w-7 h-7" />
@@ -207,6 +274,8 @@ export default function AppointmentsPage() {
                   <p className="text-xs text-slate-500 mb-5 max-w-sm mx-auto">
                     {activeTab === 'UPCOMING'
                       ? 'You have no scheduled upcoming visits. Search 12,400+ verified doctors across Bangladesh.'
+                      : activeTab === 'EXPIRED'
+                      ? 'You have no expired appointments.'
                       : 'You have no ' + activeTab.toLowerCase() + ' appointments recorded.'}
                   </p>
                   <Link
@@ -218,7 +287,7 @@ export default function AppointmentsPage() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {appointments.map((appt) => {
+                  {displayedAppointments.map((appt) => {
                     const formattedDate = new Date(appt.appointmentDate).toLocaleDateString(
                       'en-US',
                       {
@@ -229,7 +298,10 @@ export default function AppointmentsPage() {
                       }
                     );
 
-                    const isUpcoming = appt.status === 'PENDING' || appt.status === 'CONFIRMED';
+                    const isExpired = checkIsExpired(appt.appointmentDate, appt.slotTime);
+                    const isPastOrExpired = isExpired && (appt.status === 'PENDING' || appt.status === 'CONFIRMED');
+                    const canCancel = !isExpired && (appt.status === 'PENDING' || appt.status === 'CONFIRMED');
+                    const showBookAgain = isPastOrExpired || appt.status === 'COMPLETED' || appt.status === 'CANCELLED';
 
                     return (
                       <div
@@ -278,7 +350,7 @@ export default function AppointmentsPage() {
                           </div>
 
                           <div className="flex items-center gap-2 self-start sm:self-center">
-                            {getStatusBadge(appt.status)}
+                            {getStatusBadge(appt.status, isExpired)}
                           </div>
                         </div>
 
@@ -313,8 +385,14 @@ export default function AppointmentsPage() {
                           </div>
                         </div>
 
-                        <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                        <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-3">
                           <div className="text-[11px] text-slate-500">
+                            {isPastOrExpired && (
+                              <p className="text-amber-700 font-medium flex items-center gap-1 mb-0.5">
+                                <Clock className="w-3 h-3 text-amber-500" />
+                                Scheduled visit date has passed
+                              </p>
+                            )}
                             {appt.symptoms && (
                               <p className="truncate max-w-xs sm:max-w-md">
                                 <span className="font-medium text-slate-700">Reason:</span>{' '}
@@ -328,17 +406,29 @@ export default function AppointmentsPage() {
                             )}
                           </div>
 
-                          {isUpcoming && (
-                            <button
-                              onClick={() => {
-                                setCancellingId(appt.id);
-                                setCancelReason('');
-                              }}
-                              className="text-xs font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 px-3 py-1.5 rounded-xl transition-colors border border-rose-200"
-                            >
-                              Cancel Visit
-                            </button>
-                          )}
+                          <div className="flex items-center gap-2">
+                            {canCancel && (
+                              <button
+                                onClick={() => {
+                                  setCancellingId(appt.id);
+                                  setCancelReason('');
+                                }}
+                                className="text-xs font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 px-3 py-1.5 rounded-xl transition-colors border border-rose-200"
+                              >
+                                Cancel Visit
+                              </button>
+                            )}
+
+                            {showBookAgain && (
+                              <Link
+                                href={`/doctors/${appt.doctor?.slug || appt.doctor?.id || ''}`}
+                                className="inline-flex items-center gap-1.5 text-xs font-semibold text-teal-700 bg-teal-50 hover:bg-teal-100 px-3.5 py-1.5 rounded-xl transition-colors border border-teal-200 shadow-sm"
+                              >
+                                <RotateCw className="w-3.5 h-3.5 text-teal-600" />
+                                Book Again
+                              </Link>
+                            )}
+                          </div>
                         </div>
                       </div>
                     );
