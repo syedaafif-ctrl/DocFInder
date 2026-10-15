@@ -20,6 +20,9 @@ import type { Doctor } from '@/types';
 // ─── Static options ───────────────────────────────────────────
 const SPECIALTIES = [
   { label: 'Cardiology', slug: 'cardiology' },
+  { label: 'Pulmonology', slug: 'pulmonology' },
+  { label: 'Nephrology', slug: 'nephrology' },
+  { label: 'Gastroenterology', slug: 'gastroenterology' },
   { label: 'Neurology', slug: 'neurology' },
   { label: 'Gynecology', slug: 'gynecology' },
   { label: 'Pediatrics', slug: 'pediatrics' },
@@ -27,6 +30,8 @@ const SPECIALTIES = [
   { label: 'Dermatology', slug: 'dermatology' },
   { label: 'Ophthalmology', slug: 'ophthalmology' },
   { label: 'Endocrinology', slug: 'endocrinology' },
+  { label: 'General Surgery', slug: 'general-surgery' },
+  { label: 'Oncology', slug: 'oncology' },
 ];
 
 const DISTRICTS = [
