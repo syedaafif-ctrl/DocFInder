@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation';
 import {
   Stethoscope, Search, Menu, X, Phone, LogIn, UserPlus,
   Building2, Calendar, BookOpen, ChevronDown, LogOut,
-  LayoutDashboard, Heart, Settings, User,
+  LayoutDashboard, Heart, Settings, User, ShieldCheck,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import AuthModal from '@/components/auth/AuthModal';
@@ -165,6 +165,16 @@ export default function Navbar() {
                         </span>
                       </div>
                       <div className="py-1">
+                        {user?.role === 'SUPER_ADMIN' && (
+                          <Link
+                            href="/admin"
+                            onClick={() => setUserDropdownOpen(false)}
+                            className="flex items-center gap-2.5 px-4 py-2 text-xs font-bold text-amber-700 bg-amber-50/80 hover:bg-amber-100 transition-colors border-b border-amber-100/60 mb-1"
+                          >
+                            <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />
+                            Admin Console
+                          </Link>
+                        )}
                         <Link
                           href="/dashboard"
                           onClick={() => setUserDropdownOpen(false)}
@@ -305,6 +315,16 @@ export default function Navbar() {
                       <p className="text-xs text-slate-500 truncate">{user?.email}</p>
                     </div>
                   </div>
+                  {user?.role === 'SUPER_ADMIN' && (
+                    <Link
+                      href="/admin"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold transition-colors"
+                    >
+                      <ShieldCheck className="w-4 h-4 text-amber-600" />
+                      Super Admin Console
+                    </Link>
+                  )}
                   <div className="grid grid-cols-2 gap-1.5 py-1">
                     <Link
                       href="/dashboard"

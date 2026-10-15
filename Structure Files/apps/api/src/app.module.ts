@@ -13,6 +13,7 @@ import { HospitalsModule } from './modules/hospitals/hospitals.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { AppointmentsModule } from './modules/appointments/appointments.module';
 import { PatientsModule } from './modules/patients/patients.module';
+import { AdminModule } from './modules/admin/admin.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { PatientsModule } from './modules/patients/patients.module';
     HospitalsModule,
     AppointmentsModule,
     PatientsModule,
+    AdminModule,
   ],
   controllers: [HealthController],
   providers: [],
