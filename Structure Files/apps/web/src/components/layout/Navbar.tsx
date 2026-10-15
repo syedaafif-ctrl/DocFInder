@@ -175,6 +175,16 @@ export default function Navbar() {
                             Admin Console
                           </Link>
                         )}
+                        {(user?.role === 'DOCTOR' || user?.role === 'SUPER_ADMIN') && (
+                          <Link
+                            href="/doctor/dashboard"
+                            onClick={() => setUserDropdownOpen(false)}
+                            className="flex items-center gap-2.5 px-4 py-2 text-xs font-bold text-teal-800 bg-teal-50/90 hover:bg-teal-100 transition-colors border-b border-teal-100/70 mb-1"
+                          >
+                            <Stethoscope className="w-3.5 h-3.5 text-teal-600" />
+                            Doctor Portal (Chambers)
+                          </Link>
+                        )}
                         <Link
                           href="/dashboard"
                           onClick={() => setUserDropdownOpen(false)}
@@ -323,6 +333,16 @@ export default function Navbar() {
                     >
                       <ShieldCheck className="w-4 h-4 text-amber-600" />
                       Super Admin Console
+                    </Link>
+                  )}
+                  {(user?.role === 'DOCTOR' || user?.role === 'SUPER_ADMIN') && (
+                    <Link
+                      href="/doctor/dashboard"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-teal-50 border border-teal-200 text-teal-800 text-xs font-bold transition-colors"
+                    >
+                      <Stethoscope className="w-4 h-4 text-teal-600" />
+                      Doctor Portal & Chambers
                     </Link>
                   )}
                   <div className="grid grid-cols-2 gap-1.5 py-1">

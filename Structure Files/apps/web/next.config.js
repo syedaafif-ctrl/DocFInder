@@ -28,7 +28,7 @@ const nextConfig = {
 
   async redirects() {
     return [
-      { source: '/doctor/:slug', destination: '/doctors/:slug', permanent: true },
+      { source: '/doctor/:slug((?!dashboard).*)', destination: '/doctors/:slug', permanent: true },
       { source: '/login', destination: '/sign-in', permanent: true },
       { source: '/register', destination: '/sign-up', permanent: true },
     ];

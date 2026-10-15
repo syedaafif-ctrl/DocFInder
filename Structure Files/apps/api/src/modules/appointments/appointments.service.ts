@@ -591,4 +591,206 @@ export class AppointmentsService {
       },
     });
   }
+
+  async getDoctorStats(userId: string) {
+    const doctor = await this.prisma.doctor.findUnique({
+      where: { userId },
+      select: {
+        id: true,
+        name: true,
+        title: true,
+        photo: true,
+        slug: true,
+        consultationFee: true,
+      },
+    });
+
+    if (!doctor) {
+      throw new NotFoundException('Doctor profile not found for this user account');
+    }
+
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
+
+    const [
+      todayCount,
+      pendingCount,
+      confirmedUpcomingCount,
+      completedCount,
+      totalCount,
+      chambersCount,
+      revenueResult,
+    ] = await this.prisma.$transaction([
+      this.prisma.appointment.count({
+        where: {
+          doctorId: doctor.id,
+          appointmentDate: { gte: todayStart, lte: todayEnd },
+          status: { notIn: [AppointmentStatus.CANCELLED] },
+        },
+      }),
+      this.prisma.appointment.count({
+        where: {
+          doctorId: doctor.id,
+          status: AppointmentStatus.PENDING,
+        },
+      }),
+      this.prisma.appointment.count({
+        where: {
+          doctorId: doctor.id,
+          status: AppointmentStatus.CONFIRMED,
+          appointmentDate: { gte: todayStart },
+        },
+      }),
+      this.prisma.appointment.count({
+        where: {
+          doctorId: doctor.id,
+          status: AppointmentStatus.COMPLETED,
+        },
+      }),
+      this.prisma.appointment.count({
+        where: { doctorId: doctor.id },
+      }),
+      this.prisma.doctorChamber.count({
+        where: { doctorId: doctor.id },
+      }),
+      this.prisma.appointment.aggregate({
+        _sum: { totalAmount: true },
+        where: {
+          doctorId: doctor.id,
+          status: AppointmentStatus.COMPLETED,
+        },
+      }),
+    ]);
+
+    return {
+      doctor,
+      metrics: {
+        todayPatients: todayCount,
+        pendingApprovals: pendingCount,
+        confirmedUpcoming: confirmedUpcomingCount,
+        completedConsultations: completedCount,
+        totalBookings: totalCount,
+        totalChambers: chambersCount,
+        earnedRevenue: revenueResult._sum.totalAmount || 0,
+      },
+    };
+  }
+
+  async getDoctorChambers(userId: string) {
+    const doctor = await this.prisma.doctor.findUnique({
+      where: { userId },
+      select: { id: true },
+    });
+
+    if (!doctor) {
+      throw new NotFoundException('Doctor profile not found');
+    }
+
+    const chambers = await this.prisma.doctorChamber.findMany({
+      where: { doctorId: doctor.id },
+      include: {
+        hospital: { select: { id: true, name: true, slug: true } },
+        area: { select: { id: true, name: true } },
+        schedules: { orderBy: { day: 'asc' } },
+        _count: {
+          select: {
+            appointments: true,
+          },
+        },
+      },
+      orderBy: { isMain: 'desc' },
+    });
+
+    return chambers;
+  }
+
+  async findDoctorAppointments(
+    userId: string,
+    query: {
+      page?: number;
+      limit?: number;
+      chamberId?: string;
+      status?: AppointmentStatus;
+      dateScope?: string; // 'today' | 'upcoming' | 'past' | 'all'
+      search?: string;
+    }
+  ) {
+    const doctor = await this.prisma.doctor.findUnique({
+      where: { userId },
+      select: { id: true },
+    });
+
+    if (!doctor) {
+      throw new NotFoundException('Doctor profile not found');
+    }
+
+    const { page = 1, limit = 20, chamberId, status, dateScope, search } = query;
+    const skip = (page - 1) * limit;
+
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
+
+    const where: any = {
+      doctorId: doctor.id,
+      ...(chamberId && { chamberId }),
+      ...(status && { status }),
+      ...(dateScope === 'today' && {
+        appointmentDate: { gte: todayStart, lte: todayEnd },
+      }),
+      ...(dateScope === 'upcoming' && {
+        appointmentDate: { gte: todayStart },
+      }),
+      ...(dateScope === 'past' && {
+        appointmentDate: { lt: todayStart },
+      }),
+      ...(search && {
+        OR: [
+          { appointmentNumber: { contains: search, mode: 'insensitive' } },
+          { patientName: { contains: search, mode: 'insensitive' } },
+          { patientPhone: { contains: search } },
+        ],
+      }),
+    };
+
+    const [appointments, total] = await this.prisma.$transaction([
+      this.prisma.appointment.findMany({
+        where,
+        include: {
+          patient: {
+            select: { id: true, name: true, email: true, phone: true },
+          },
+          chamber: {
+            select: {
+              id: true,
+              name: true,
+              address: true,
+              phone: true,
+              hospital: { select: { id: true, name: true, slug: true } },
+            },
+          },
+          hospital: {
+            select: { id: true, name: true, slug: true },
+          },
+        },
+        orderBy: [{ appointmentDate: 'desc' }, { slotTime: 'desc' }],
+        skip,
+        take: limit,
+      }),
+      this.prisma.appointment.count({ where }),
+    ]);
+
+    return {
+      data: appointments,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
 }

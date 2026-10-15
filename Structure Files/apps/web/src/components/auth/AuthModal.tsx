@@ -57,6 +57,12 @@ export default function AuthModal() {
     setError(null);
   };
 
+  const fillDemoDoctor = () => {
+    setEmail('dr.aminul@swasthabd.com');
+    setPassword('Doctor@123456');
+    setError(null);
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
       <div
@@ -168,15 +174,25 @@ export default function AuthModal() {
               </button>
 
               {/* Demo helper */}
-              <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={fillDemoAdmin}
-                  className="text-xs text-teal-600 hover:text-teal-700 font-medium hover:underline flex items-center gap-1"
-                >
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  Fill Demo Admin credentials
-                </button>
+              <div className="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={fillDemoDoctor}
+                    className="text-xs text-teal-700 bg-teal-50 hover:bg-teal-100 px-2.5 py-1 rounded-lg font-semibold flex items-center gap-1 transition-colors"
+                  >
+                    <Stethoscope className="w-3.5 h-3.5 text-teal-600" />
+                    Demo Doctor
+                  </button>
+                  <button
+                    type="button"
+                    onClick={fillDemoAdmin}
+                    className="text-xs text-amber-800 bg-amber-50 hover:bg-amber-100 px-2.5 py-1 rounded-lg font-semibold flex items-center gap-1 transition-colors"
+                  >
+                    <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />
+                    Demo Admin
+                  </button>
+                </div>
                 <button
                   type="button"
                   onClick={() => openAuthModal('register')}

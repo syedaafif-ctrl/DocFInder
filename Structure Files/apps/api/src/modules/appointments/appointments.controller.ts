@@ -48,6 +48,39 @@ export class AppointmentsController {
     return this.appointmentsService.findPatientAppointments(user.id, queryDto);
   }
 
+  @Get('doctor/stats')
+  @ApiOperation({ summary: 'Get overview metrics for currently authenticated doctor' })
+  getDoctorStats(@CurrentUser() user: any) {
+    return this.appointmentsService.getDoctorStats(user.id);
+  }
+
+  @Get('doctor/chambers')
+  @ApiOperation({ summary: 'Get all practice chambers and schedules for authenticated doctor' })
+  getDoctorChambers(@CurrentUser() user: any) {
+    return this.appointmentsService.getDoctorChambers(user.id);
+  }
+
+  @Get('doctor/my')
+  @ApiOperation({ summary: 'Get appointments for authenticated doctor with multi-chamber filters' })
+  findDoctorAppointments(
+    @CurrentUser() user: any,
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('chamberId') chamberId?: string,
+    @Query('status') status?: any,
+    @Query('dateScope') dateScope?: string,
+    @Query('search') search?: string,
+  ) {
+    return this.appointmentsService.findDoctorAppointments(user.id, {
+      page: Number(page) || 1,
+      limit: Number(limit) || 20,
+      chamberId,
+      status,
+      dateScope,
+      search,
+    });
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get details of a specific appointment' })
   findOne(@CurrentUser() user: any, @Param('id') id: string) {
