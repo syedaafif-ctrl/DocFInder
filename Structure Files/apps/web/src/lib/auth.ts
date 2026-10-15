@@ -12,6 +12,8 @@ export interface User {
   role: 'PATIENT' | 'DOCTOR' | 'HOSPITAL_ADMIN' | 'SUPER_ADMIN' | 'CONTENT_MANAGER';
   status?: string;
   avatar?: string | null;
+  gender?: 'MALE' | 'FEMALE' | 'OTHER' | null;
+  dateOfBirth?: string | null;
   emailVerified?: boolean;
   phoneVerified?: boolean;
   preferredLanguage?: string;
@@ -172,5 +174,126 @@ export async function cancelAppointmentApi(id: string, reason: string, token: st
 
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || 'Failed to cancel appointment');
+  return data;
+}
+
+// Patient Dashboard & Profile APIs
+export interface PatientStats {
+  totalAppointments: number;
+  upcomingAppointments: number;
+  completedAppointments: number;
+  cancelledAppointments: number;
+  savedDoctorsCount: number;
+  nextAppointment: {
+    id: string;
+    appointmentNumber: string;
+    appointmentDate: string;
+    slotTime: string;
+    type: string;
+    status: string;
+    doctor: {
+      id: string;
+      name: string;
+      nameBn?: string | null;
+      slug: string;
+      title?: string | null;
+      photo?: string | null;
+      consultationFee: number;
+      specialties?: Array<{ specialty: { id: string; name: string; nameBn?: string | null } }>;
+    };
+    chamber?: {
+      id: string;
+      name: string;
+      address?: string | null;
+      hospital?: { id: string; name: string; slug: string } | null;
+    } | null;
+    hospital?: {
+      id: string;
+      name: string;
+      slug: string;
+    } | null;
+  } | null;
+}
+
+export interface UpdatePatientProfilePayload {
+  name?: string;
+  nameBn?: string;
+  phone?: string;
+  gender?: 'MALE' | 'FEMALE' | 'OTHER';
+  dateOfBirth?: string;
+  preferredLanguage?: string;
+  avatar?: string;
+}
+
+export async function getPatientStatsApi(token: string): Promise<PatientStats> {
+  const res = await fetch(`${API_BASE}/patients/stats`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Failed to load dashboard statistics');
+  return data;
+}
+
+export async function getPatientProfileApi(token: string): Promise<User> {
+  const res = await fetch(`${API_BASE}/patients/profile`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Failed to load patient profile');
+  return data;
+}
+
+export async function updatePatientProfileApi(payload: UpdatePatientProfilePayload, token: string): Promise<User> {
+  const res = await fetch(`${API_BASE}/patients/profile`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const errorMsg = Array.isArray(data.message) ? data.message.join(', ') : data.message;
+    throw new Error(errorMsg || 'Failed to update profile');
+  }
+  return data;
+}
+
+export async function getSavedDoctorsApi(token: string) {
+  const res = await fetch(`${API_BASE}/patients/saved-doctors`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Failed to load saved doctors');
+  return data;
+}
+
+export async function saveDoctorApi(doctorId: string, token: string) {
+  const res = await fetch(`${API_BASE}/patients/saved-doctors/${doctorId}`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Failed to save doctor');
+  return data;
+}
+
+export async function unsaveDoctorApi(doctorId: string, token: string) {
+  const res = await fetch(`${API_BASE}/patients/saved-doctors/${doctorId}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Failed to remove saved doctor');
+  return data;
+}
+
+export async function checkDoctorSavedApi(doctorId: string, token: string): Promise<{ isSaved: boolean }> {
+  const res = await fetch(`${API_BASE}/patients/saved-doctors/check/${doctorId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Failed to check doctor bookmark status');
   return data;
 }

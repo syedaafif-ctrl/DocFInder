@@ -10,6 +10,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (payload: RegisterPayload) => Promise<void>;
+  updateUser: (updatedUser: User) => void;
   logout: () => void;
   authModalOpen: boolean;
   authModalTab: 'login' | 'register';
@@ -99,6 +100,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const updateUser = useCallback((updatedUser: User) => {
+    setUser(updatedUser);
+  }, []);
+
   const logout = () => {
     setUser(null);
     setToken(null);
@@ -117,6 +122,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isAuthenticated: !!user,
         login,
         register,
+        updateUser,
         logout,
         authModalOpen,
         authModalTab,
