@@ -17,6 +17,8 @@ interface DoctorHospitalCardProps {
   chamber: Chamber;
   hospitalName: string;
   departmentName: string;
+  hospitalId?: string;
+  hospitalSlug?: string;
   onBook?: (doctor: Doctor, chamber: Chamber) => void;
   index?: number;
 }
@@ -39,13 +41,17 @@ function formatTime12(t: string): string {
 // DOCTOR HOSPITAL CARD
 // ============================================================
 export default function DoctorHospitalCard({
-  doctor, chamber, hospitalName, departmentName, onBook, index = 0,
+  doctor, chamber, hospitalName, departmentName, hospitalId, hospitalSlug, onBook, index = 0,
 }: DoctorHospitalCardProps) {
   const [expanded, setExpanded] = useState(false);
 
   const primary  = doctor.specialties.find(s => s.isPrimary) ?? doctor.specialties[0];
   const qualStr  = doctor.qualifications.slice(0, 3).map(q => q.degree).join(', ');
   const fee      = chamber.appointmentFee ?? doctor.consultationFee;
+
+  const effectiveHospitalParam = hospitalSlug || hospitalId || chamber.hospitalId || '';
+  const profileUrl = `/doctors/${doctor.slug}${effectiveHospitalParam ? `?hospital=${encodeURIComponent(effectiveHospitalParam)}&chamber=${encodeURIComponent(chamber.id)}` : ''}`;
+  const bookUrl = `/doctors/${doctor.slug}?${effectiveHospitalParam ? `hospital=${encodeURIComponent(effectiveHospitalParam)}&` : ''}chamber=${encodeURIComponent(chamber.id)}&book=true`;
 
   // Hospital-specific schedule only
   const activeDays = BD_DAY_ORDER
@@ -102,7 +108,7 @@ export default function DoctorHospitalCard({
                   )}
                 </div>
 
-                <Link href={`/doctors/${doctor.slug}`} className="block">
+                <Link href={profileUrl} className="block">
                   <h3 className="font-bold text-slate-900 text-base leading-tight group-hover:text-sky-700 transition-colors">
                     {doctor.title} {doctor.name}
                   </h3>
@@ -222,7 +228,7 @@ export default function DoctorHospitalCard({
 
             {/* View profile */}
             <Link
-              href={`/doctors/${doctor.slug}`}
+              href={profileUrl}
               className="p-2.5 rounded-xl bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200 transition-colors"
               title="View full profile"
               onClick={e => e.stopPropagation()}
@@ -230,9 +236,9 @@ export default function DoctorHospitalCard({
               <ChevronRight className="w-4 h-4" />
             </Link>
 
-            {/* Book Now — navigates to doctor profile */}
+            {/* Book Now — navigates to doctor profile with hospital and chamber pre-selected */}
             <Link
-              href={`/doctors/${doctor.slug}`}
+              href={bookUrl}
               className={cn(
                 'inline-flex items-center gap-2 font-semibold text-sm px-4 py-2.5 rounded-xl transition-all',
                 'bg-sky-600 hover:bg-sky-700 text-white shadow-lg shadow-sky-200 hover:shadow-xl hover:-translate-y-0.5'

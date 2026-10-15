@@ -1247,6 +1247,7 @@ export default function HospitalDetailPage({ slug }: Props) {
         <DepartmentDoctors
           department={activeDept}
           hospitalId={hospital.id}
+          hospitalSlug={hospital.slug}
           hospitalName={hospital.name}
           onClose={() => setActiveDept(null)}
         />

@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 interface DepartmentDoctorsProps {
   department: HospitalDepartment;
   hospitalId: string;
+  hospitalSlug?: string;
   hospitalName: string;
   onClose: () => void;
 }
@@ -19,6 +20,7 @@ type SortOption = 'rating' | 'experience' | 'fee_low' | 'fee_high';
 export default function DepartmentDoctors({
   department,
   hospitalId,
+  hospitalSlug,
   hospitalName,
   onClose,
 }: DepartmentDoctorsProps) {
@@ -164,6 +166,8 @@ export default function DepartmentDoctors({
                   key={doctor.id}
                   doctor={doctor}
                   chamber={chamberWithSchedules}
+                  hospitalId={hospitalId}
+                  hospitalSlug={hospitalSlug}
                   hospitalName={hospitalName}
                   departmentName={department.name}
                 />

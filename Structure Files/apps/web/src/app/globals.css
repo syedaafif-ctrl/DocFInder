@@ -4,6 +4,8 @@
 @tailwind components;
 @tailwind utilities;
 
+/* DocFinder BD Theme Tokens */
+
 :root {
   --font-display: 'DM Serif Display', Georgia, serif;
   --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
