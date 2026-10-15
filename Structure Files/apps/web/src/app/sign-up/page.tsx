@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
-import { UserPlus, AlertCircle, Loader2, Stethoscope, User as UserIcon } from 'lucide-react';
+import { UserPlus, AlertCircle, Loader2, Stethoscope, User as UserIcon, ShieldCheck } from 'lucide-react';
 
 export default function SignUpPage() {
   const { register } = useAuth();
@@ -140,6 +140,14 @@ export default function SignUpPage() {
                   Doctor
                 </button>
               </div>
+              {role === 'DOCTOR' && (
+                <div className="mt-2 p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-[11px] leading-relaxed flex items-start gap-2">
+                  <ShieldCheck className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                  <span>
+                    Doctor accounts require administrative review. Upon registering, your application will be reviewed by an administrator before practice chambers and patient appointments are activated.
+                  </span>
+                </div>
+              )}
             </div>
 
             <button

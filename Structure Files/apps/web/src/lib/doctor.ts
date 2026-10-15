@@ -11,6 +11,10 @@ export interface DoctorStats {
     photo?: string | null;
     slug: string;
     consultationFee: number;
+    status: string;
+    verificationStatus?: string;
+    bmdcNumber?: string | null;
+    createdAt?: string;
   };
   metrics: {
     todayPatients: number;

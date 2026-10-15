@@ -13,7 +13,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { AuthResponse, SafeUser } from './interfaces/auth-response.interface';
-import { UserRole, UserStatus, User } from '@prisma/client';
+import { UserRole, UserStatus, User, DoctorStatus, VerificationStatus, Gender } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -57,6 +57,38 @@ export class AuthService {
         status: UserStatus.ACTIVE,
       },
     });
+
+    // When registering as a doctor, create a Doctor profile with PENDING_APPROVAL status
+    if (role === UserRole.DOCTOR) {
+      const slugBase = name
+        .toLowerCase()
+        .replace(/prof\.\s*(dr\.)?|dr\.|assoc\.\s*prof\./gi, '')
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-]/g, '') || 'doctor';
+      const doctorSlug = `dr-${slugBase}-${user.id.slice(-6)}`;
+
+      await this.prisma.doctor.create({
+        data: {
+          userId: user.id,
+          slug: doctorSlug,
+          name: name.trim(),
+          title: name.toLowerCase().startsWith('dr') ? undefined : 'Dr.',
+          gender: Gender.MALE,
+          bmdcVerified: false,
+          consultationFee: 1000,
+          experience: 1,
+          phone: user.phone,
+          status: DoctorStatus.PENDING_APPROVAL,
+          verificationStatus: VerificationStatus.PENDING,
+          isVerified: false,
+          isFeatured: false,
+          about: 'New doctor profile pending administrative review and BMDC verification.',
+          metaTitle: `${user.name} | DocFinder BD`,
+          metaDescription: `Consult with ${user.name} on DocFinder BD.`,
+        },
+      });
+    }
 
     const tokens = this.generateTokens({
       id: user.id,

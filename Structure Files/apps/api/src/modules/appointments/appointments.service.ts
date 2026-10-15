@@ -593,7 +593,7 @@ export class AppointmentsService {
   }
 
   async getDoctorStats(userId: string) {
-    const doctor = await this.prisma.doctor.findUnique({
+    let doctor = await this.prisma.doctor.findUnique({
       where: { userId },
       select: {
         id: true,
@@ -602,11 +602,74 @@ export class AppointmentsService {
         photo: true,
         slug: true,
         consultationFee: true,
+        status: true,
+        verificationStatus: true,
+        bmdcNumber: true,
+        createdAt: true,
       },
     });
 
     if (!doctor) {
-      throw new NotFoundException('Doctor profile not found for this user account');
+      // Check if user is a doctor without a doctor record yet
+      const user = await this.prisma.user.findUnique({ where: { id: userId } });
+      if (user && (user.role === 'DOCTOR' || user.role === 'SUPER_ADMIN')) {
+        const slugBase = user.name
+          .toLowerCase()
+          .replace(/prof\.\s*(dr\.)?|dr\.|assoc\.\s*prof\./gi, '')
+          .trim()
+          .replace(/\s+/g, '-')
+          .replace(/[^a-z0-9-]/g, '') || 'doctor';
+        const doctorSlug = `dr-${slugBase}-${user.id.slice(-6)}`;
+
+        const created = await this.prisma.doctor.create({
+          data: {
+            userId: user.id,
+            slug: doctorSlug,
+            name: user.name,
+            title: user.name.toLowerCase().startsWith('dr') ? undefined : 'Dr.',
+            gender: 'MALE',
+            bmdcVerified: false,
+            consultationFee: 1000,
+            experience: 1,
+            phone: user.phone,
+            status: DoctorStatus.PENDING_APPROVAL,
+            verificationStatus: 'PENDING',
+            isVerified: false,
+            about: 'New doctor profile pending administrative review.',
+          },
+          select: {
+            id: true,
+            name: true,
+            title: true,
+            photo: true,
+            slug: true,
+            consultationFee: true,
+            status: true,
+            verificationStatus: true,
+            bmdcNumber: true,
+            createdAt: true,
+          },
+        });
+        doctor = created;
+      } else {
+        throw new NotFoundException('Doctor profile not found for this user account');
+      }
+    }
+
+    // If doctor is pending approval, return empty metrics immediately
+    if (doctor.status !== DoctorStatus.ACTIVE) {
+      return {
+        doctor,
+        metrics: {
+          todayPatients: 0,
+          pendingApprovals: 0,
+          confirmedUpcoming: 0,
+          completedConsultations: 0,
+          totalBookings: 0,
+          totalChambers: 0,
+          earnedRevenue: 0,
+        },
+      };
     }
 
     const todayStart = new Date();

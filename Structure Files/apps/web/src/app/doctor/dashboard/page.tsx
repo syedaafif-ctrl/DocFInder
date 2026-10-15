@@ -256,6 +256,101 @@ function DoctorDashboardContent() {
     );
   }
 
+  // ─── Pending Approval Guard ─────────────────────────────────
+  if (stats?.doctor && stats.doctor.status !== 'ACTIVE' && user?.role !== 'SUPER_ADMIN') {
+    return (
+      <>
+        <Navbar />
+        <main className="min-h-screen bg-slate-50/70 pt-24 pb-16 flex items-center justify-center px-4">
+          <div className="max-w-2xl w-full bg-white rounded-3xl p-8 sm:p-10 shadow-xl border border-slate-100 relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500" />
+
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center mb-5 shadow-inner">
+                <Clock className="w-8 h-8 text-amber-600 animate-pulse" />
+              </div>
+
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold uppercase tracking-wider mb-3">
+                <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
+                Pending Administrative Approval
+              </div>
+
+              <h1 className="text-2xl font-bold text-slate-900 mb-2">
+                Welcome, {stats.doctor.title || 'Dr.'} {stats.doctor.name}
+              </h1>
+
+              <p className="text-slate-600 text-sm max-w-lg mb-8">
+                Your doctor registration was received and is currently under review by our medical verification team.
+                Once an administrator approves your profile, your practice chambers will be activated and patients can begin booking appointments.
+              </p>
+
+              {/* Progress Steps */}
+              <div className="w-full bg-slate-50 border border-slate-200/80 rounded-2xl p-5 mb-8 text-left space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5">
+                    <CheckCircle2 className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-800">1. Account Registered</h4>
+                    <p className="text-[11px] text-slate-500">Your profile credentials and contact details have been securely logged.</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="w-7 h-7 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 mt-0.5">
+                    <RotateCw className="w-4 h-4 animate-spin" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-amber-900">2. Credential & BMDC Review (In Progress)</h4>
+                    <p className="text-[11px] text-amber-700">Platform administrators are verifying your medical registration and qualifications.</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="w-7 h-7 rounded-full bg-slate-200 text-slate-400 flex items-center justify-center shrink-0 mt-0.5">
+                    <Stethoscope className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-500">3. Chamber & Practice Activation</h4>
+                    <p className="text-[11px] text-slate-400">Public profile will be listed in search results and chamber queues will go live.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-3 w-full">
+                <button
+                  onClick={loadStatsAndChambers}
+                  className="flex-1 py-3 px-4 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs tracking-wide shadow-md shadow-teal-600/20 transition-all flex items-center justify-center gap-2"
+                >
+                  <RotateCw className="w-3.5 h-3.5" />
+                  Check Approval Status
+                </button>
+                <Link
+                  href="/"
+                  className="flex-1 py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition-all text-center"
+                >
+                  Back to Homepage
+                </Link>
+              </div>
+
+              <div className="mt-6 pt-6 border-t border-slate-100 w-full flex items-center justify-between text-xs text-slate-500">
+                <span>Need expedited approval?</span>
+                <a
+                  href="mailto:support@swasthabd.com?subject=Doctor%20Account%20Verification%20Expedite"
+                  className="text-teal-600 hover:text-teal-700 font-semibold underline"
+                >
+                  Contact Admin Support
+                </a>
+              </div>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </>
+    );
+  }
+
   // Active chamber label
   const selectedChamber = chambers.find((c) => c.id === selectedChamberId);
 
