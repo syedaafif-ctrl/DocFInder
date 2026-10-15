@@ -8,7 +8,20 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Primary teal — DocHub BD brand
+        // Primary brand & teal — DocFinder BD
+        brand: {
+          50:  '#f0fdfc',
+          100: '#ccfbf7',
+          200: '#99f6ee',
+          300: '#5eead8',
+          400: '#2dd4bf',
+          500: '#14b8a6',
+          600: '#0d9488',
+          700: '#0f766e',
+          800: '#115e59',
+          900: '#134e4a',
+          950: '#042f2e',
+        },
         teal: {
           50:  '#f0fdfc',
           100: '#ccfbf7',
@@ -86,6 +99,8 @@ module.exports = {
         'nav': '0 1px 0 0 rgb(0 0 0 / 0.06)',
         'teal': '0 4px 14px 0 rgb(15 118 110 / 0.28)',
         'teal-lg': '0 8px 24px 0 rgb(15 118 110 / 0.32)',
+        'brand': '0 4px 14px 0 rgb(15 118 110 / 0.28)',
+        'brand-lg': '0 8px 24px 0 rgb(15 118 110 / 0.32)',
         'inner-sm': 'inset 0 1px 2px 0 rgb(0 0 0 / 0.05)',
       },
 

@@ -37,10 +37,10 @@ export interface District {
   name: string;
   nameBn: string;
   slug: string;
-  divisionId: string;
+  divisionId?: string;
   division?: Division;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Upazilla {
@@ -57,14 +57,14 @@ export interface Upazilla {
 export interface Area {
   id: string;
   name: string;
-  nameBn: string;
-  slug: string;
-  upazillaId: string;
+  nameBn?: string;
+  slug?: string;
+  upazillaId?: string;
   upazilla?: Upazilla;
   latitude?: number;
   longitude?: number;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 // ============================================================
@@ -88,24 +88,24 @@ export interface Specialty {
   name: string;
   nameBn: string;
   slug: string;
-  categoryId: string;
+  categoryId?: string;
   category?: SpecialtyCategory;
   description?: string;
   icon?: string;
-  isFeatured: boolean;
-  doctorCount: number;
-  sortOrder: number;
-  createdAt: string;
-  updatedAt: string;
+  isFeatured?: boolean;
+  doctorCount?: number;
+  sortOrder?: number;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface DoctorSpecialty {
-  id: string;
-  doctorId: string;
-  specialtyId: string;
+  id?: string;
+  doctorId?: string;
+  specialtyId?: string;
   specialty: Specialty;
-  isPrimary: boolean;
-  createdAt: string;
+  isPrimary?: boolean;
+  createdAt?: string;
 }
 
 // ============================================================
@@ -113,14 +113,14 @@ export interface DoctorSpecialty {
 // ============================================================
 
 export interface Qualification {
-  id: string;
-  doctorId: string;
+  id?: string;
+  doctorId?: string;
   degree: string;
-  institution: string;
-  country: string;
+  institution?: string;
+  country?: string;
   year?: number;
-  sortOrder: number;
-  createdAt: string;
+  sortOrder?: number;
+  createdAt?: string;
 }
 
 // ============================================================
@@ -141,7 +141,7 @@ export interface ChamberSchedule {
 
 export interface Chamber {
   id: string;
-  doctorId: string;
+  doctorId?: string;
   name: string;
   nameBn?: string;
   address: string;
@@ -155,8 +155,19 @@ export interface Chamber {
   isMain: boolean;
   appointmentFee?: number;
   schedules: ChamberSchedule[];
-  createdAt: string;
-  updatedAt: string;
+  hospitalId?: string;
+  hospital?: {
+    id: string;
+    name: string;
+    slug?: string;
+  };
+  departmentId?: string;
+  department?: {
+    id: string;
+    name: string;
+  };
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 // ============================================================
@@ -215,14 +226,14 @@ export interface Hospital {
 
 export interface DoctorHospital {
   id: string;
-  doctorId: string;
+  doctorId?: string;
   hospitalId: string;
-  hospital: Pick<Hospital, 'id' | 'name' | 'slug' | 'logo' | 'type'>;
+  hospital: Pick<Hospital, 'id' | 'name' | 'slug' | 'type'> & { logo?: string };
   designation?: string;
   department?: string;
   isActive: boolean;
   joinedAt?: string;
-  createdAt: string;
+  createdAt?: string;
 }
 
 // ============================================================
@@ -261,35 +272,35 @@ export interface Review {
 
 export interface DoctorAward {
   id: string;
-  doctorId: string;
+  doctorId?: string;
   title: string;
   organization: string;
   year: number;
-  createdAt: string;
+  createdAt?: string;
 }
 
 export interface DoctorPublication {
   id: string;
-  doctorId: string;
+  doctorId?: string;
   title: string;
   journal?: string;
   year: number;
   url?: string;
-  createdAt: string;
+  createdAt?: string;
 }
 
 export interface DoctorMembership {
   id: string;
-  doctorId: string;
+  doctorId?: string;
   organization: string;
   membershipId?: string;
   year?: number;
-  createdAt: string;
+  createdAt?: string;
 }
 
 export interface Doctor {
   id: string;
-  userId: string;
+  userId?: string;
   slug: string;
   name: string;
   nameBn?: string;
@@ -309,19 +320,19 @@ export interface Doctor {
   phone?: string;
   whatsapp?: string;
   email?: string;
-  languages: string[];
+  languages?: string[];
   districtId?: string;
   district?: District;
-  status: DoctorStatus;
-  verificationStatus: VerificationStatus;
+  status?: DoctorStatus;
+  verificationStatus?: VerificationStatus;
   isAvailableOnline: boolean;
   isFeatured: boolean;
   isVerified: boolean;
   rating: number;
   reviewCount: number;
   totalAppointments: number;
-  profileViews: number;
-  searchAppearances: number;
+  profileViews?: number;
+  searchAppearances?: number;
   sponsoredRank?: number;
   metaTitle?: string;
   metaDescription?: string;
@@ -334,10 +345,12 @@ export interface Doctor {
   publications?: DoctorPublication[];
   memberships?: DoctorMembership[];
   reviews?: Review[];
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
   approvedAt?: string;
 }
+
+export type DoctorListItem = Doctor;
 
 // ============================================================
 // APPOINTMENT
@@ -445,6 +458,21 @@ export interface SearchDoctorsParams {
   sortBy?: 'relevance' | 'rating' | 'experience' | 'fee_low' | 'fee_high' | 'popular' | 'newest';
   page?: number;
   limit?: number;
+}
+
+export type SearchFilters = SearchDoctorsParams;
+
+export interface DoctorSearchResponse {
+  doctors: DoctorListItem[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface SlotResponse {
+  date: string;
+  slots: { time: string; booked: boolean }[];
 }
 
 // ============================================================

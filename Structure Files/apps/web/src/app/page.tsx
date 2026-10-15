@@ -1147,38 +1147,41 @@ export default function HomePage() {
         </section>
 
         {/* ── Doctor CTA Banner ── */}
-        <section className="py-16 sm:py-20 bg-gradient-to-br from-brand-900 via-sky-800 to-sky-700">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-            <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 mb-6">
+        <section className="relative py-16 sm:py-20 bg-slate-900 bg-gradient-to-br from-brand-900 via-sky-900 to-teal-900 overflow-hidden text-white">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(14,165,233,0.15),transparent_50%)] pointer-events-none" />
+          <div className="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
+            <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 mb-6 backdrop-blur-sm">
               <Stethoscope className="w-4 h-4 text-sky-300" />
-              <span className="text-white/90 text-sm font-medium">For Healthcare Professionals</span>
+              <span className="text-white text-sm font-semibold">For Healthcare Professionals</span>
             </div>
-            <h2 className="font-playfair text-3xl sm:text-4xl font-bold text-white mb-4">
+            <h2 className="font-playfair text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
               Are You a Doctor?
               <br />
-              <span className="text-sky-300">List Your Practice Free</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-teal-200 to-emerald-300">
+                List Your Practice Free
+              </span>
             </h2>
-            <p className="text-sky-100/80 text-base mb-8 max-w-xl mx-auto">
+            <p className="text-sky-100 text-base sm:text-lg mb-8 max-w-xl mx-auto font-normal">
               Join 12,400+ doctors on Bangladesh's largest healthcare discovery platform. 
               Get new patients, manage appointments, and grow your practice.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/for-doctors"
-                className="inline-flex items-center justify-center gap-2 bg-white text-sky-700 font-bold px-8 py-3.5 rounded-2xl hover:bg-sky-50 transition-colors shadow-xl"
+                className="inline-flex items-center justify-center gap-2 bg-white text-slate-900 hover:text-sky-700 font-bold px-8 py-3.5 rounded-2xl hover:bg-sky-50 transition-all shadow-xl hover:shadow-2xl hover:scale-[1.02]"
               >
-                <CheckCircle2 className="w-5 h-5" />
+                <CheckCircle2 className="w-5 h-5 text-emerald-600" />
                 Join as a Doctor — Free
               </Link>
               <Link
                 href="/for-hospitals"
-                className="inline-flex items-center justify-center gap-2 bg-white/10 border border-white/25 text-white font-semibold px-8 py-3.5 rounded-2xl hover:bg-white/20 transition-colors"
+                className="inline-flex items-center justify-center gap-2 bg-white/10 border border-white/30 text-white font-semibold px-8 py-3.5 rounded-2xl hover:bg-white/20 transition-all hover:scale-[1.02]"
               >
-                <Building2 className="w-5 h-5" />
+                <Building2 className="w-5 h-5 text-sky-200" />
                 List Your Hospital
               </Link>
             </div>
-            <p className="mt-5 text-sky-200/60 text-xs">
+            <p className="mt-5 text-sky-200/80 text-xs font-medium">
               No credit card required · Setup in under 10 minutes · Cancel anytime
             </p>
           </div>

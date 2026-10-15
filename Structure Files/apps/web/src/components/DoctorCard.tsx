@@ -6,7 +6,7 @@ import {
   Star, MapPin, Clock, Phone, MessageCircle, Calendar,
   BadgeCheck, Video, Award, ChevronRight, Bookmark, BookmarkCheck
 } from 'lucide-react';
-import { cn, formatCurrency, formatExperience, getPrimarySpecialty, getMainChamberArea, getDoctorAvailabilityDays } from '@/lib/utils';
+import { cn, formatCurrency, formatExperience, getPrimarySpecialtyName, getMainChamberArea, getDoctorAvailabilityDays } from '@/lib/utils';
 import type { Doctor } from '@/types';
 import { useState } from 'react';
 
@@ -24,10 +24,10 @@ const DAYS_SHORT: Record<string, string> = {
 
 export default function DoctorCard({ doctor, variant = 'default', className, isSponsored }: DoctorCardProps) {
   const [saved, setSaved] = useState(false);
-  const primarySpecialty = getPrimarySpecialty(doctor);
+  const primarySpecialty = getPrimarySpecialtyName(doctor);
   const area = getMainChamberArea(doctor);
   const availDays = getDoctorAvailabilityDays(doctor);
-  const qualAbbrev = doctor.qualifications.map(q => q.degree).join(', ');
+  const qualAbbrev = doctor.qualifications.map((q) => q.degree).join(', ');
 
   if (variant === 'compact') {
     return (
@@ -251,7 +251,9 @@ export default function DoctorCard({ doctor, variant = 'default', className, isS
               </Link>
             </h3>
             {doctor.isVerified && (
-              <BadgeCheck className="w-4.5 h-4.5 text-sky-500 shrink-0 mt-0.5" title="BMDC Verified" />
+              <span title="BMDC Verified">
+                <BadgeCheck className="w-4.5 h-4.5 text-sky-500 shrink-0 mt-0.5" />
+              </span>
             )}
           </div>
 
@@ -278,21 +280,21 @@ export default function DoctorCard({ doctor, variant = 'default', className, isS
         </div>
 
         {/* Hospitals */}
-        {doctor.hospitals.length > 0 && (
+        {doctor.hospitals && doctor.hospitals.length > 0 && (
           <div className="flex items-center gap-1.5 mb-2.5">
             <div className="flex -space-x-2">
-              {doctor.hospitals.slice(0, 2).map(h => (
+              {doctor.hospitals.slice(0, 2).map((h) => (
                 <div
                   key={h.id}
                   className="w-5 h-5 rounded-full bg-slate-200 border-2 border-white overflow-hidden"
-                  title={h.name}
+                  title={h.hospital.name}
                 >
-                  {h.logo && <Image src={h.logo} alt={h.name} width={20} height={20} className="object-cover" />}
+                  {h.hospital.logo && <Image src={h.hospital.logo} alt={h.hospital.name} width={20} height={20} className="object-cover" />}
                 </div>
               ))}
             </div>
             <span className="text-xs text-slate-500 truncate">
-              {doctor.hospitals[0]?.name}
+              {doctor.hospitals[0]?.hospital.name}
               {doctor.hospitals.length > 1 && ` +${doctor.hospitals.length - 1}`}
             </span>
           </div>

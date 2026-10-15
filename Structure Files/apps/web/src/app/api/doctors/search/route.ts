@@ -23,11 +23,11 @@ export async function GET(request: NextRequest) {
     results = results.filter((d) => {
       const specialtyMatch = d.specialties.some((s) =>
         s.specialty.name.toLowerCase().includes(query) ||
-        s.specialty.nameBn.includes(query)
+        (s.specialty.nameBn ? s.specialty.nameBn.includes(query) : false)
       );
       const qualMatch = d.qualifications.some((q) =>
         q.degree.toLowerCase().includes(query) ||
-        q.institution.toLowerCase().includes(query)
+        (q.institution ? q.institution.toLowerCase().includes(query) : false)
       );
       return (
         d.name.toLowerCase().includes(query) ||

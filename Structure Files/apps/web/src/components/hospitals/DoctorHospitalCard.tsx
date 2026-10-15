@@ -17,7 +17,7 @@ interface DoctorHospitalCardProps {
   chamber: Chamber;
   hospitalName: string;
   departmentName: string;
-  onBook: (doctor: Doctor, chamber: Chamber) => void;
+  onBook?: (doctor: Doctor, chamber: Chamber) => void;
   index?: number;
 }
 
@@ -68,7 +68,7 @@ export default function DoctorHospitalCard({
         {/* ── Doctor header ── */}
         <div className="flex gap-4">
           {/* Avatar */}
-          <div className="relative shrink-0">
+          <Link href={`/doctors/${doctor.slug}`} className="relative shrink-0 block">
             <div className="w-20 h-20 rounded-2xl overflow-hidden bg-gradient-to-br from-sky-50 to-slate-100 border-2 border-white shadow-md">
               <Image
                 src={doctor.photo ?? `https://api.dicebear.com/8.x/avataaars/svg?seed=${doctor.id}`}
@@ -81,7 +81,7 @@ export default function DoctorHospitalCard({
                 <BadgeCheck className="w-3 h-3 text-white" />
               </div>
             )}
-          </div>
+          </Link>
 
           {/* Info */}
           <div className="flex-1 min-w-0">
@@ -102,9 +102,11 @@ export default function DoctorHospitalCard({
                   )}
                 </div>
 
-                <h3 className="font-bold text-slate-900 text-base leading-tight group-hover:text-sky-700 transition-colors">
-                  {doctor.title} {doctor.name}
-                </h3>
+                <Link href={`/doctors/${doctor.slug}`} className="block">
+                  <h3 className="font-bold text-slate-900 text-base leading-tight group-hover:text-sky-700 transition-colors">
+                    {doctor.title} {doctor.name}
+                  </h3>
+                </Link>
                 <p className="text-sky-600 text-xs font-semibold mt-0.5">{primary?.specialty.name}</p>
                 <p className="text-slate-400 text-xs mt-0.5 line-clamp-1">{qualStr}</p>
               </div>
@@ -228,20 +230,17 @@ export default function DoctorHospitalCard({
               <ChevronRight className="w-4 h-4" />
             </Link>
 
-            {/* Book Now — primary CTA */}
-            <button
-              onClick={() => onBook(doctor, chamber)}
-              disabled={activeDays.length === 0}
+            {/* Book Now — navigates to doctor profile */}
+            <Link
+              href={`/doctors/${doctor.slug}`}
               className={cn(
                 'inline-flex items-center gap-2 font-semibold text-sm px-4 py-2.5 rounded-xl transition-all',
-                activeDays.length > 0
-                  ? 'bg-sky-600 hover:bg-sky-700 text-white shadow-lg shadow-sky-200 hover:shadow-xl hover:-translate-y-0.5'
-                  : 'bg-slate-100 text-slate-400 cursor-not-allowed',
+                'bg-sky-600 hover:bg-sky-700 text-white shadow-lg shadow-sky-200 hover:shadow-xl hover:-translate-y-0.5'
               )}
             >
               <Calendar className="w-4 h-4" />
               Book Now
-            </button>
+            </Link>
           </div>
         </div>
       </div>

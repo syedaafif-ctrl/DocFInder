@@ -6,7 +6,6 @@ import {
   fetchDoctorBySlug,
   fetchDoctorSlots,
 } from '@/lib/api';
-import type { SearchFilters } from '@/types';
 
 // ─── Keys ────────────────────────────────────────────────
 

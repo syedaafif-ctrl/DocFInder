@@ -3,7 +3,7 @@
 // apps/web/src/app/doctors/page.tsx
 // Drop this file at: apps/web/src/app/doctors/page.tsx
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -148,7 +148,7 @@ function DoctorCard({ doctor }: { doctor: Doctor }) {
 }
 
 // ─── Main Page ─────────────────────────────────────────────────
-export default function DoctorsPage() {
+function DoctorsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -447,5 +447,19 @@ export default function DoctorsPage() {
       </main>
       <Footer />
     </>
+  );
+}
+
+export default function DoctorsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-full border-2 border-sky-600 border-t-transparent animate-spin" />
+        </div>
+      }
+    >
+      <DoctorsContent />
+    </Suspense>
   );
 }

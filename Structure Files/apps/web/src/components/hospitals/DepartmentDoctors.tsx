@@ -5,7 +5,6 @@ import { X, Stethoscope, Users, Phone, Search, SlidersHorizontal, Loader2 } from
 import type { Doctor, Chamber, HospitalDepartment } from '@/types';
 import { getDoctorsByHospitalAndDepartment } from '@/lib/mockData';
 import DoctorHospitalCard from '@/components/hospitals/DoctorHospitalCard';
-import BookingModal from '@/components/BookingModal';
 import { cn } from '@/lib/utils';
 
 interface DepartmentDoctorsProps {
@@ -25,7 +24,6 @@ export default function DepartmentDoctors({
 }: DepartmentDoctorsProps) {
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<SortOption>('rating');
-  const [bookingDoctor, setBookingDoctor] = useState<{ doctor: Doctor; chamber: Chamber } | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
   // Get doctors from mock data
@@ -40,11 +38,11 @@ export default function DepartmentDoctors({
   // Escape key
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && !bookingDoctor) onClose();
+      if (e.key === 'Escape') onClose();
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
-  }, [onClose, bookingDoctor]);
+  }, [onClose]);
 
   const filtered = allDoctors
     .filter((doctor) => {
@@ -52,8 +50,8 @@ export default function DepartmentDoctors({
       const q = search.toLowerCase();
       return (
         doctor.name.toLowerCase().includes(q) ||
-        doctor.specialties.some((s: any) => s.specialty.name.toLowerCase().includes(q)) ||
-        doctor.qualifications.some((qk: any) => qk.degree.toLowerCase().includes(q))
+        doctor.specialties.some((s) => s.specialty.name.toLowerCase().includes(q)) ||
+        doctor.qualifications.some((qk) => qk.degree.toLowerCase().includes(q))
       );
     })
     .sort((a, b) => {
@@ -151,49 +149,29 @@ export default function DepartmentDoctors({
           ) : (
             filtered.map((doctor) => {
               const chamber = doctor.chambers?.[0];
-if (!chamber) return null;
-const chamberWithSchedules = {
-  ...chamber,
-  schedules: (chamber as any).schedules ?? [
-    { id: 'sch-001', chamberId: chamber.id, day: 'SATURDAY',  startTime: '10:00', endTime: '14:00', slotDuration: 15, maxPatients: 20, isClosed: false },
-    { id: 'sch-002', chamberId: chamber.id, day: 'MONDAY',    startTime: '10:00', endTime: '14:00', slotDuration: 15, maxPatients: 20, isClosed: false },
-    { id: 'sch-003', chamberId: chamber.id, day: 'WEDNESDAY', startTime: '16:00', endTime: '20:00', slotDuration: 15, maxPatients: 20, isClosed: false },
-    { id: 'sch-004', chamberId: chamber.id, day: 'THURSDAY',  startTime: '16:00', endTime: '20:00', slotDuration: 15, maxPatients: 20, isClosed: false },
-  ],
-};
               if (!chamber) return null;
+              const chamberWithSchedules: Chamber = {
+                ...chamber,
+                schedules: chamber.schedules && chamber.schedules.length > 0 ? chamber.schedules : [
+                  { id: 'sch-001', chamberId: chamber.id, day: 'SATURDAY',  startTime: '10:00', endTime: '14:00', slotDuration: 15, maxPatients: 20, isClosed: false },
+                  { id: 'sch-002', chamberId: chamber.id, day: 'MONDAY',    startTime: '10:00', endTime: '14:00', slotDuration: 15, maxPatients: 20, isClosed: false },
+                  { id: 'sch-003', chamberId: chamber.id, day: 'WEDNESDAY', startTime: '16:00', endTime: '20:00', slotDuration: 15, maxPatients: 20, isClosed: false },
+                  { id: 'sch-004', chamberId: chamber.id, day: 'THURSDAY',  startTime: '16:00', endTime: '20:00', slotDuration: 15, maxPatients: 20, isClosed: false },
+                ],
+              };
               return (
                 <DoctorHospitalCard
-  key={doctor.id}
-  doctor={doctor as any}
-  chamber={chamberWithSchedules as any}
-  hospitalName={hospitalName}
-  departmentName={department.name}
-  onBook={(d, c) => setBookingDoctor({ doctor: d, chamber: c })}
-/>
+                  key={doctor.id}
+                  doctor={doctor}
+                  chamber={chamberWithSchedules}
+                  hospitalName={hospitalName}
+                  departmentName={department.name}
+                />
               );
             })
           )}
         </div>
       </div>
-
-      {/* Canonical Booking Modal */}
-      {bookingDoctor && (
-        <BookingModal
-          doctor={bookingDoctor.doctor as any}
-          hospital={{
-            id: hospitalId,
-            name: hospitalName,
-          }}
-          department={{
-            id: department.id,
-            name: department.name,
-          }}
-          initialChamberId={bookingDoctor.chamber.id}
-          isOpen={true}
-          onClose={() => setBookingDoctor(null)}
-        />
-      )}
 
       <style jsx global>{`
         @keyframes slide-in-right {

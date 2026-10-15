@@ -4,32 +4,32 @@
 // Used for local development and Next.js API route responses
 // ============================================================
 
-import type { DoctorListItem, Doctor } from '@/types';
+import type { DoctorListItem, Doctor, District } from '@/types';
 
 // ─── Shared sub-data ──────────────────────────────────────
 
-const DHAKA_DISTRICT = {
+const DHAKA_DISTRICT: District = {
   id: 'dist-dhaka',
   name: 'Dhaka',
   nameBn: 'ঢাকা',
   slug: 'dhaka-district',
 };
 
-const CHITTAGONG_DISTRICT = {
+const CHITTAGONG_DISTRICT: District = {
   id: 'dist-ctg',
   name: 'Chittagong',
   nameBn: 'চট্টগ্রাম',
   slug: 'chittagong-district',
 };
 
-const SYLHET_DISTRICT = {
+const SYLHET_DISTRICT: District = {
   id: 'dist-syl',
   name: 'Sylhet',
   nameBn: 'সিলেট',
   slug: 'sylhet-district',
 };
 
-const RAJSHAHI_DISTRICT = {
+const RAJSHAHI_DISTRICT: District = {
   id: 'dist-raj',
   name: 'Rajshahi',
   nameBn: 'রাজশাহী',
@@ -918,7 +918,7 @@ export function filterDoctors(params: FilterParams) {
       ) ||
       d.qualifications.some((qual) =>
         qual.degree.toLowerCase().includes(q) ||
-        qual.institution.toLowerCase().includes(q)
+        (qual.institution ? qual.institution.toLowerCase().includes(q) : false)
       )
     );
   }
@@ -937,7 +937,7 @@ export function filterDoctors(params: FilterParams) {
 
   // Gender
   if (params.gender && params.gender !== 'all') {
-    result = result.filter((d) => d.gender.toLowerCase() === params.gender!.toLowerCase());
+    result = result.filter((d) => d.gender && d.gender.toLowerCase() === params.gender!.toLowerCase());
   }
 
   // Online only
