@@ -1,6 +1,9 @@
+const path = require('path');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+
 
   images: {
     remotePatterns: [
@@ -35,14 +38,18 @@ const nextConfig = {
   },
 
   async rewrites() {
-    return process.env.NODE_ENV === 'development'
-      ? [
-          {
-            source: '/api/v1/:path*',
-            destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1'}/:path*`,
-          },
-        ]
-      : [];
+    const backendUrl =
+      process.env.NEXT_PUBLIC_API_URL ||
+      (process.env.NODE_ENV === 'development' ? 'http://localhost:4000/api/v1' : null);
+
+    if (!backendUrl) return [];
+
+    return [
+      {
+        source: '/api/v1/:path*',
+        destination: `${backendUrl}/:path*`,
+      },
+    ];
   },
 
   experimental: {

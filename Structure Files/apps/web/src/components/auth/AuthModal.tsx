@@ -1,10 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { X, LogIn, UserPlus, AlertCircle, Loader2, Stethoscope, User as UserIcon, ShieldCheck } from 'lucide-react';
 
 export default function AuthModal() {
+  const router = useRouter();
   const { authModalOpen, authModalTab, closeAuthModal, openAuthModal, login, register } = useAuth();
 
   // Form states
@@ -25,12 +27,18 @@ export default function AuthModal() {
     setSubmitting(true);
     try {
       await login(email, password);
+      if (email === 'admin@swasthabd.com') {
+        router.push('/admin');
+      } else if (email.startsWith('dr.') || email.includes('doctor')) {
+        router.push('/doctor/dashboard');
+      }
     } catch (err: any) {
       setError(err.message || 'Failed to sign in. Please verify your credentials.');
     } finally {
       setSubmitting(false);
     }
   };
+
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();

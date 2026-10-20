@@ -1,0 +1,11 @@
+{
+  "name": "docfinder",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DocFinder BD — Healthcare Discovery & Doctor Appointment Platform",
+  "scripts": {
+    "build": "npm run build:web --prefix \"Structure Files\"",
+    "build:web": "npm run build:web --prefix \"Structure Files\"",
+    "dev": "npm run dev --prefix \"Structure Files\""
+  }
+}

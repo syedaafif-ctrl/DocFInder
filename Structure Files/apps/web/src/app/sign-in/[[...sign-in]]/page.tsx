@@ -21,8 +21,15 @@ export default function SignInPage() {
     setSubmitting(true);
     try {
       await login(email, password);
-      router.push('/');
+      if (email === 'admin@swasthabd.com') {
+        router.push('/admin');
+      } else if (email.startsWith('dr.') || email.includes('doctor')) {
+        router.push('/doctor/dashboard');
+      } else {
+        router.push('/');
+      }
     } catch (err: any) {
+
       setError(err.message || 'Failed to sign in. Please verify your credentials.');
     } finally {
       setSubmitting(false);
@@ -34,6 +41,13 @@ export default function SignInPage() {
     setPassword('Admin@123456');
     setError(null);
   };
+
+  const fillDemoDoctor = () => {
+    setEmail('dr.aminul@swasthabd.com');
+    setPassword('Doctor@123456');
+    setError(null);
+  };
+
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
@@ -92,19 +106,30 @@ export default function SignInPage() {
               Sign In
             </button>
 
-            <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-              <button
-                type="button"
-                onClick={fillDemoAdmin}
-                className="text-xs text-teal-600 hover:text-teal-700 font-medium hover:underline flex items-center gap-1"
-              >
-                <ShieldCheck className="w-3.5 h-3.5" />
-                Fill Demo Admin
-              </button>
+            <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={fillDemoDoctor}
+                  className="text-xs text-emerald-600 hover:text-emerald-700 font-medium hover:underline flex items-center gap-1"
+                >
+                  <Stethoscope className="w-3.5 h-3.5" />
+                  Demo Doctor
+                </button>
+                <button
+                  type="button"
+                  onClick={fillDemoAdmin}
+                  className="text-xs text-teal-600 hover:text-teal-700 font-medium hover:underline flex items-center gap-1"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  Demo Admin
+                </button>
+              </div>
               <Link href="/" className="text-xs text-slate-500 hover:text-slate-700">
-                Back to Home
+                Home
               </Link>
             </div>
+
 
             <p className="text-center text-xs text-slate-500 pt-3 border-t border-slate-100">
               Don't have an account?{' '}

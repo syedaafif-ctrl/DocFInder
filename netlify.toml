@@ -1,0 +1,25 @@
+# Netlify configuration for DocFinder
+# Automatically detected when connecting your GitHub repository to Netlify
+
+[build]
+  base = "Structure Files"
+  command = "npm run build:web"
+  publish = "apps/web/.next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[build.environment]
+  NODE_VERSION = "20"
+  NPM_FLAGS = "--legacy-peer-deps"
+
+# Cache Next.js build artifacts for faster incremental builds
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
