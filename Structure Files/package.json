@@ -34,6 +34,7 @@
     "setup": "npm install && npm run db:generate && npm run db:migrate && npm run db:seed"
   },
   "devDependencies": {
+    "@netlify/plugin-nextjs": "^5.9.4",
     "@types/node": "^20.14.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
@@ -42,6 +43,7 @@
     "turbo": "^2.0.6",
     "typescript": "^5.9.3"
   },
+
   "engines": {
     "node": ">=20.0.0",
     "npm": ">=10.0.0"

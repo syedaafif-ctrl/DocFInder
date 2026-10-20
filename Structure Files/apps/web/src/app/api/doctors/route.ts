@@ -1,24 +1,6 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { MOCK_DOCTORS } from '@/lib/mockData';
 
 export async function GET() {
-  const doctors = await prisma.doctor.findMany({
-    include: {
-      specialties: {
-        include: {
-          specialty: true,
-        },
-      },
-      hospitals: {
-        include: {
-          hospital: true,
-        },
-      },
-      district: true,
-    },
-  });
-
-  return NextResponse.json(doctors);
-}
+  return NextResponse.json(MOCK_DOCTORS);
+}
