@@ -180,6 +180,97 @@ export async function getDoctorChambersApi(token: string): Promise<DoctorChamber
   ];
 }
 
+export let DEMO_DOCTOR_APPOINTMENTS: DoctorAppointment[] = [
+  {
+    id: 'apt-d01',
+    appointmentNumber: 'APT-839201',
+    type: 'IN_PERSON',
+    status: 'PENDING',
+    appointmentDate: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+    slotTime: '17:30',
+    patientName: 'Ruhul Amin',
+    patientPhone: '01812345678',
+    patientAge: 48,
+    patientGender: 'MALE',
+    symptoms: 'Persistent chest discomfort during exertion and mild hypertension',
+    consultationFee: 1500,
+    totalAmount: 1500,
+    paymentStatus: 'PAID',
+    createdAt: new Date().toISOString(),
+    chamber: {
+      id: 'ch-sq-01',
+      name: 'Square Hospital OPD Chamber (Room 304)',
+      hospital: { id: 'h-001', name: 'Square Hospital Ltd.', slug: 'square-hospital' },
+    },
+  },
+  {
+    id: 'apt-d02',
+    appointmentNumber: 'APT-839202',
+    type: 'IN_PERSON',
+    status: 'PENDING',
+    appointmentDate: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+    slotTime: '18:00',
+    patientName: 'Nasrin Sultana',
+    patientPhone: '01719876543',
+    patientAge: 36,
+    patientGender: 'FEMALE',
+    symptoms: 'Post-operative cardiac evaluation follow up',
+    consultationFee: 1500,
+    totalAmount: 1500,
+    paymentStatus: 'PAID',
+    createdAt: new Date().toISOString(),
+    chamber: {
+      id: 'ch-sq-01',
+      name: 'Square Hospital OPD Chamber (Room 304)',
+      hospital: { id: 'h-001', name: 'Square Hospital Ltd.', slug: 'square-hospital' },
+    },
+  },
+  {
+    id: 'apt-d03',
+    appointmentNumber: 'APT-839203',
+    type: 'IN_PERSON',
+    status: 'CONFIRMED',
+    appointmentDate: new Date().toISOString().split('T')[0],
+    slotTime: '17:00',
+    patientName: 'Kazi Farhan',
+    patientPhone: '01911223344',
+    patientAge: 52,
+    patientGender: 'MALE',
+    symptoms: 'Routine ECG review and lipid profile checkup',
+    consultationFee: 1500,
+    totalAmount: 1500,
+    paymentStatus: 'PAID',
+    createdAt: new Date(Date.now() - 86400000).toISOString(),
+    chamber: {
+      id: 'ch-sq-01',
+      name: 'Square Hospital OPD Chamber (Room 304)',
+      hospital: { id: 'h-001', name: 'Square Hospital Ltd.', slug: 'square-hospital' },
+    },
+  },
+  {
+    id: 'apt-d04',
+    appointmentNumber: 'APT-839204',
+    type: 'IN_PERSON',
+    status: 'COMPLETED',
+    appointmentDate: new Date(Date.now() - 86400000).toISOString().split('T')[0],
+    slotTime: '17:15',
+    patientName: 'Mahmudul Hasan',
+    patientPhone: '01678901234',
+    patientAge: 42,
+    patientGender: 'MALE',
+    symptoms: 'Shortness of breath',
+    consultationNotes: 'Advised Echocardiogram and 2 weeks rest with prescribed medication.',
+    consultationFee: 1400,
+    totalAmount: 1400,
+    paymentStatus: 'PAID',
+    createdAt: new Date(Date.now() - 172800000).toISOString(),
+    chamber: {
+      id: 'ch-dh-02',
+      name: 'Dhanmondi Specialized Diagnostic Chamber',
+    },
+  },
+];
+
 export async function getDoctorAppointmentsApi(
   token: string,
   params?: {
@@ -209,98 +300,7 @@ export async function getDoctorAppointmentsApi(
     // Network fallback
   }
 
-  const mockList: DoctorAppointment[] = [
-    {
-      id: 'apt-d01',
-      appointmentNumber: 'APT-839201',
-      type: 'IN_PERSON',
-      status: 'PENDING',
-      appointmentDate: new Date(Date.now() + 86400000).toISOString().split('T')[0],
-      slotTime: '17:30',
-      patientName: 'Ruhul Amin',
-      patientPhone: '01812345678',
-      patientAge: 48,
-      patientGender: 'MALE',
-      symptoms: 'Persistent chest discomfort during exertion and mild hypertension',
-      consultationFee: 1500,
-      totalAmount: 1500,
-      paymentStatus: 'PAID',
-      createdAt: new Date().toISOString(),
-      chamber: {
-        id: 'ch-sq-01',
-        name: 'Square Hospital OPD Chamber (Room 304)',
-        hospital: { id: 'h-001', name: 'Square Hospital Ltd.', slug: 'square-hospital' },
-      },
-    },
-    {
-      id: 'apt-d02',
-      appointmentNumber: 'APT-839202',
-      type: 'IN_PERSON',
-      status: 'PENDING',
-      appointmentDate: new Date(Date.now() + 86400000).toISOString().split('T')[0],
-      slotTime: '18:00',
-      patientName: 'Nasrin Sultana',
-      patientPhone: '01719876543',
-      patientAge: 36,
-      patientGender: 'FEMALE',
-      symptoms: 'Post-operative cardiac evaluation follow up',
-      consultationFee: 1500,
-      totalAmount: 1500,
-      paymentStatus: 'PAID',
-      createdAt: new Date().toISOString(),
-      chamber: {
-        id: 'ch-sq-01',
-        name: 'Square Hospital OPD Chamber (Room 304)',
-        hospital: { id: 'h-001', name: 'Square Hospital Ltd.', slug: 'square-hospital' },
-      },
-    },
-    {
-      id: 'apt-d03',
-      appointmentNumber: 'APT-839203',
-      type: 'IN_PERSON',
-      status: 'CONFIRMED',
-      appointmentDate: new Date().toISOString().split('T')[0],
-      slotTime: '17:00',
-      patientName: 'Kazi Farhan',
-      patientPhone: '01911223344',
-      patientAge: 52,
-      patientGender: 'MALE',
-      symptoms: 'Routine ECG review and lipid profile checkup',
-      consultationFee: 1500,
-      totalAmount: 1500,
-      paymentStatus: 'PAID',
-      createdAt: new Date(Date.now() - 86400000).toISOString(),
-      chamber: {
-        id: 'ch-sq-01',
-        name: 'Square Hospital OPD Chamber (Room 304)',
-        hospital: { id: 'h-001', name: 'Square Hospital Ltd.', slug: 'square-hospital' },
-      },
-    },
-    {
-      id: 'apt-d04',
-      appointmentNumber: 'APT-839204',
-      type: 'IN_PERSON',
-      status: 'COMPLETED',
-      appointmentDate: new Date(Date.now() - 86400000).toISOString().split('T')[0],
-      slotTime: '17:15',
-      patientName: 'Mahmudul Hasan',
-      patientPhone: '01678901234',
-      patientAge: 42,
-      patientGender: 'MALE',
-      symptoms: 'Shortness of breath',
-      consultationNotes: 'Advised Echocardiogram and 2 weeks rest with prescribed medication.',
-      consultationFee: 1400,
-      totalAmount: 1400,
-      paymentStatus: 'PAID',
-      createdAt: new Date(Date.now() - 172800000).toISOString(),
-      chamber: {
-        id: 'ch-dh-02',
-        name: 'Dhanmondi Specialized Diagnostic Chamber',
-      },
-    },
-  ];
-
-  let filtered = mockList;
+  let filtered = DEMO_DOCTOR_APPOINTMENTS;
   if (params?.status) filtered = filtered.filter((a) => a.status === params.status);
   if (params?.chamberId) filtered = filtered.filter((a) => a.chamber?.id === params.chamberId);
   if (params?.search) {
@@ -324,8 +324,14 @@ export async function confirmDoctorAppointmentApi(id: string, token: string) {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
-    if (res.ok) return data;
+    if (res.ok) {
+      const appt = DEMO_DOCTOR_APPOINTMENTS.find((a) => a.id === id);
+      if (appt) appt.status = 'CONFIRMED';
+      return data;
+    }
   } catch (err) {}
+  const appt = DEMO_DOCTOR_APPOINTMENTS.find((a) => a.id === id);
+  if (appt) appt.status = 'CONFIRMED';
   return { success: true, message: 'Appointment confirmed successfully' };
 }
 
@@ -340,8 +346,14 @@ export async function cancelDoctorAppointmentApi(id: string, reason: string, tok
       body: JSON.stringify({ reason }),
     });
     const data = await res.json();
-    if (res.ok) return data;
+    if (res.ok) {
+      const appt = DEMO_DOCTOR_APPOINTMENTS.find((a) => a.id === id);
+      if (appt) appt.status = 'CANCELLED';
+      return data;
+    }
   } catch (err) {}
+  const appt = DEMO_DOCTOR_APPOINTMENTS.find((a) => a.id === id);
+  if (appt) appt.status = 'CANCELLED';
   return { success: true, message: 'Appointment cancelled successfully' };
 }
 
@@ -356,8 +368,20 @@ export async function completeDoctorAppointmentApi(id: string, notes: string | u
       body: JSON.stringify({ notes }),
     });
     const data = await res.json();
-    if (res.ok) return data;
+    if (res.ok) {
+      const appt = DEMO_DOCTOR_APPOINTMENTS.find((a) => a.id === id);
+      if (appt) {
+        appt.status = 'COMPLETED';
+        if (notes) appt.consultationNotes = notes;
+      }
+      return data;
+    }
   } catch (err) {}
+  const appt = DEMO_DOCTOR_APPOINTMENTS.find((a) => a.id === id);
+  if (appt) {
+    appt.status = 'COMPLETED';
+    if (notes) appt.consultationNotes = notes;
+  }
   return { success: true, message: 'Appointment marked completed successfully' };
 }
 

@@ -124,6 +124,94 @@ export async function getAdminStatsApi(token: string): Promise<AdminStats> {
   };
 }
 
+export let DEMO_ADMIN_DOCTORS = [
+  {
+    id: 'doc-001',
+    name: 'Prof. Dr. Aminul Islam',
+    slug: 'dr-aminul-islam',
+    title: 'Prof. Dr.',
+    status: 'ACTIVE',
+    verificationStatus: 'VERIFIED',
+    bmdcNumber: 'A-28491',
+    bmdcVerified: true,
+    isFeatured: true,
+    consultationFee: 1500,
+    totalAppointments: 159,
+    rating: 4.9,
+    specialties: [{ specialty: { name: 'Cardiology' } }],
+    user: { email: 'dr.aminul@swasthabd.com', phone: '01711223344' },
+    district: { name: 'Dhaka' },
+  },
+  {
+    id: 'doc-sq-01',
+    name: 'Prof. Dr. Tareq Mohammad Alam',
+    slug: 'dr-tareq-mohammad-alam',
+    title: 'Prof. Dr.',
+    status: 'ACTIVE',
+    verificationStatus: 'VERIFIED',
+    bmdcNumber: 'A-31204',
+    bmdcVerified: true,
+    isFeatured: true,
+    consultationFee: 1500,
+    totalAppointments: 84,
+    rating: 4.8,
+    specialties: [{ specialty: { name: 'Pulmonology' } }],
+    user: { email: 'dr.tareq.alam@swasthabd.com', phone: '01819283746' },
+    district: { name: 'Dhaka' },
+  },
+  {
+    id: 'doc-ev-01',
+    name: 'Prof. Dr. Shahabuddin Talukder',
+    slug: 'dr-shahabuddin-talukder',
+    title: 'Prof. Dr.',
+    status: 'ACTIVE',
+    verificationStatus: 'VERIFIED',
+    bmdcNumber: 'A-19842',
+    bmdcVerified: true,
+    isFeatured: false,
+    consultationFee: 1800,
+    totalAppointments: 112,
+    rating: 4.9,
+    specialties: [{ specialty: { name: 'Nephrology' } }],
+    user: { email: 'dr.shahabuddin.talukder@swasthabd.com', phone: '01912345678' },
+    district: { name: 'Dhaka' },
+  },
+  {
+    id: 'doc-uh-01',
+    name: 'Dr. Jahangir Kabir',
+    slug: 'dr-jahangir-kabir',
+    title: 'Dr.',
+    status: 'ACTIVE',
+    verificationStatus: 'VERIFIED',
+    bmdcNumber: 'A-42109',
+    bmdcVerified: true,
+    isFeatured: false,
+    consultationFee: 1600,
+    totalAppointments: 97,
+    rating: 4.8,
+    specialties: [{ specialty: { name: 'Gastroenterology' } }],
+    user: { email: 'dr.jahangir.kabir@swasthabd.com', phone: '01723456789' },
+    district: { name: 'Dhaka' },
+  },
+  {
+    id: 'doc-pend-01',
+    name: 'Dr. Nusrat Jahan',
+    slug: 'dr-nusrat-jahan',
+    title: 'Dr.',
+    status: 'PENDING_APPROVAL',
+    verificationStatus: 'PENDING',
+    bmdcNumber: 'A-49281',
+    bmdcVerified: false,
+    isFeatured: false,
+    consultationFee: 1000,
+    totalAppointments: 0,
+    rating: 0,
+    specialties: [{ specialty: { name: 'Dermatology' } }],
+    user: { email: 'dr.nusrat@swasthabd.com', phone: '01799887766' },
+    district: { name: 'Dhaka' },
+  },
+];
+
 export async function getAdminDoctorsApi(
   token: string,
   params?: {
@@ -153,95 +241,7 @@ export async function getAdminDoctorsApi(
     // Network fallback
   }
 
-  const mockAdminDocs = [
-    {
-      id: 'doc-001',
-      name: 'Prof. Dr. Aminul Islam',
-      slug: 'dr-aminul-islam',
-      title: 'Prof. Dr.',
-      status: 'ACTIVE',
-      verificationStatus: 'VERIFIED',
-      bmdcNumber: 'A-28491',
-      bmdcVerified: true,
-      isFeatured: true,
-      consultationFee: 1500,
-      totalAppointments: 159,
-      rating: 4.9,
-      specialties: [{ specialty: { name: 'Cardiology' } }],
-      user: { email: 'dr.aminul@swasthabd.com', phone: '01711223344' },
-      district: { name: 'Dhaka' },
-    },
-    {
-      id: 'doc-sq-01',
-      name: 'Prof. Dr. Tareq Mohammad Alam',
-      slug: 'dr-tareq-mohammad-alam',
-      title: 'Prof. Dr.',
-      status: 'ACTIVE',
-      verificationStatus: 'VERIFIED',
-      bmdcNumber: 'A-31204',
-      bmdcVerified: true,
-      isFeatured: true,
-      consultationFee: 1500,
-      totalAppointments: 84,
-      rating: 4.8,
-      specialties: [{ specialty: { name: 'Pulmonology' } }],
-      user: { email: 'dr.tareq.alam@swasthabd.com', phone: '01819283746' },
-      district: { name: 'Dhaka' },
-    },
-    {
-      id: 'doc-ev-01',
-      name: 'Prof. Dr. Shahabuddin Talukder',
-      slug: 'dr-shahabuddin-talukder',
-      title: 'Prof. Dr.',
-      status: 'ACTIVE',
-      verificationStatus: 'VERIFIED',
-      bmdcNumber: 'A-19842',
-      bmdcVerified: true,
-      isFeatured: false,
-      consultationFee: 1800,
-      totalAppointments: 112,
-      rating: 4.9,
-      specialties: [{ specialty: { name: 'Nephrology' } }],
-      user: { email: 'dr.shahabuddin.talukder@swasthabd.com', phone: '01912345678' },
-      district: { name: 'Dhaka' },
-    },
-    {
-      id: 'doc-uh-01',
-      name: 'Dr. Jahangir Kabir',
-      slug: 'dr-jahangir-kabir',
-      title: 'Dr.',
-      status: 'ACTIVE',
-      verificationStatus: 'VERIFIED',
-      bmdcNumber: 'A-42109',
-      bmdcVerified: true,
-      isFeatured: false,
-      consultationFee: 1600,
-      totalAppointments: 97,
-      rating: 4.8,
-      specialties: [{ specialty: { name: 'Gastroenterology' } }],
-      user: { email: 'dr.jahangir.kabir@swasthabd.com', phone: '01723456789' },
-      district: { name: 'Dhaka' },
-    },
-    {
-      id: 'doc-pend-01',
-      name: 'Dr. Nusrat Jahan',
-      slug: 'dr-nusrat-jahan',
-      title: 'Dr.',
-      status: 'PENDING_APPROVAL',
-      verificationStatus: 'PENDING',
-      bmdcNumber: 'A-49281',
-      bmdcVerified: false,
-      isFeatured: false,
-      consultationFee: 1000,
-      totalAppointments: 0,
-      rating: 0,
-      specialties: [{ specialty: { name: 'Dermatology' } }],
-      user: { email: 'dr.nusrat@swasthabd.com', phone: '01799887766' },
-      district: { name: 'Dhaka' },
-    },
-  ];
-
-  let filtered = mockAdminDocs;
+  let filtered = DEMO_ADMIN_DOCTORS;
   if (params?.status) filtered = filtered.filter(d => d.status === params.status);
   if (params?.search) {
     const q = params.search.toLowerCase();
@@ -268,8 +268,14 @@ export async function updateDoctorStatusApi(doctorId: string, status: string, to
       body: JSON.stringify({ status }),
     });
     const data = await res.json();
-    if (res.ok) return data;
+    if (res.ok) {
+      const doc = DEMO_ADMIN_DOCTORS.find(d => d.id === doctorId);
+      if (doc) doc.status = status;
+      return data;
+    }
   } catch (err) {}
+  const doc = DEMO_ADMIN_DOCTORS.find(d => d.id === doctorId);
+  if (doc) doc.status = status;
   return { success: true, message: `Doctor status updated to ${status}` };
 }
 
@@ -289,8 +295,20 @@ export async function updateDoctorVerificationApi(
       body: JSON.stringify({ verificationStatus, bmdcVerified }),
     });
     const data = await res.json();
-    if (res.ok) return data;
+    if (res.ok) {
+      const doc = DEMO_ADMIN_DOCTORS.find(d => d.id === doctorId);
+      if (doc) {
+        doc.verificationStatus = verificationStatus;
+        doc.bmdcVerified = bmdcVerified;
+      }
+      return data;
+    }
   } catch (err) {}
+  const doc = DEMO_ADMIN_DOCTORS.find(d => d.id === doctorId);
+  if (doc) {
+    doc.verificationStatus = verificationStatus;
+    doc.bmdcVerified = bmdcVerified;
+  }
   return { success: true, message: 'Doctor verification updated' };
 }
 
@@ -301,9 +319,15 @@ export async function toggleDoctorFeaturedApi(doctorId: string, token: string) {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
-    if (res.ok) return data;
+    if (res.ok) {
+      const doc = DEMO_ADMIN_DOCTORS.find(d => d.id === doctorId);
+      if (doc) doc.isFeatured = !doc.isFeatured;
+      return data;
+    }
   } catch (err) {}
-  return { success: true, isFeatured: true };
+  const doc = DEMO_ADMIN_DOCTORS.find(d => d.id === doctorId);
+  if (doc) doc.isFeatured = !doc.isFeatured;
+  return { success: true, isFeatured: doc ? doc.isFeatured : true };
 }
 
 export async function getAdminHospitalsApi(
@@ -398,6 +422,45 @@ export async function toggleHospitalVerifiedApi(hospitalId: string, token: strin
   return { success: true };
 }
 
+export let DEMO_ADMIN_APPOINTMENTS = [
+  {
+    id: 'apt-01',
+    appointmentNumber: 'APT-928101',
+    appointmentDate: new Date().toISOString().split('T')[0],
+    slotTime: '17:30',
+    status: 'PENDING',
+    totalAmount: 1500,
+    patientName: 'Ruhul Amin',
+    patientPhone: '01812345678',
+    doctor: { id: 'doc-001', name: 'Prof. Dr. Aminul Islam', slug: 'dr-aminul-islam' },
+    chamber: { name: 'Square Hospital OPD (Room 304)' },
+  },
+  {
+    id: 'apt-02',
+    appointmentNumber: 'APT-928102',
+    appointmentDate: new Date().toISOString().split('T')[0],
+    slotTime: '16:00',
+    status: 'CONFIRMED',
+    totalAmount: 1800,
+    patientName: 'Kazi Farhan',
+    patientPhone: '01911223344',
+    doctor: { id: 'doc-ev-01', name: 'Prof. Dr. Shahabuddin Talukder', slug: 'dr-shahabuddin-talukder' },
+    chamber: { name: 'Evercare Hospital Dhaka (Chamber 408)' },
+  },
+  {
+    id: 'apt-03',
+    appointmentNumber: 'APT-928103',
+    appointmentDate: new Date(Date.now() - 86400000).toISOString().split('T')[0],
+    slotTime: '18:15',
+    status: 'COMPLETED',
+    totalAmount: 1600,
+    patientName: 'Nasrin Sultana',
+    patientPhone: '01719876543',
+    doctor: { id: 'doc-uh-01', name: 'Dr. Jahangir Kabir', slug: 'dr-jahangir-kabir' },
+    chamber: { name: 'United Hospital Limited (Room 215)' },
+  },
+];
+
 export async function getAdminAppointmentsApi(
   token: string,
   params?: { page?: number; limit?: number; search?: string; status?: string }
@@ -416,48 +479,16 @@ export async function getAdminAppointmentsApi(
     if (res.ok) return data;
   } catch (err) {}
 
-  const mockAppts = [
-    {
-      id: 'apt-01',
-      appointmentNumber: 'APT-928101',
-      appointmentDate: new Date().toISOString().split('T')[0],
-      slotTime: '17:30',
-      status: 'PENDING',
-      totalAmount: 1500,
-      patientName: 'Ruhul Amin',
-      patientPhone: '01812345678',
-      doctor: { id: 'doc-001', name: 'Prof. Dr. Aminul Islam', slug: 'dr-aminul-islam' },
-      chamber: { name: 'Square Hospital OPD (Room 304)' },
-    },
-    {
-      id: 'apt-02',
-      appointmentNumber: 'APT-928102',
-      appointmentDate: new Date().toISOString().split('T')[0],
-      slotTime: '16:00',
-      status: 'CONFIRMED',
-      totalAmount: 1800,
-      patientName: 'Kazi Farhan',
-      patientPhone: '01911223344',
-      doctor: { id: 'doc-ev-01', name: 'Prof. Dr. Shahabuddin Talukder', slug: 'dr-shahabuddin-talukder' },
-      chamber: { name: 'Evercare Hospital Dhaka (Chamber 408)' },
-    },
-    {
-      id: 'apt-03',
-      appointmentNumber: 'APT-928103',
-      appointmentDate: new Date(Date.now() - 86400000).toISOString().split('T')[0],
-      slotTime: '18:15',
-      status: 'COMPLETED',
-      totalAmount: 1600,
-      patientName: 'Nasrin Sultana',
-      patientPhone: '01719876543',
-      doctor: { id: 'doc-uh-01', name: 'Dr. Jahangir Kabir', slug: 'dr-jahangir-kabir' },
-      chamber: { name: 'United Hospital Limited (Room 215)' },
-    },
-  ];
+  let filtered = DEMO_ADMIN_APPOINTMENTS;
+  if (params?.status) filtered = filtered.filter(a => a.status === params.status);
+  if (params?.search) {
+    const q = params.search.toLowerCase();
+    filtered = filtered.filter(a => a.patientName?.toLowerCase().includes(q) || a.appointmentNumber?.toLowerCase().includes(q));
+  }
 
   return {
-    data: mockAppts,
-    total: mockAppts.length,
+    data: filtered,
+    total: filtered.length,
     page: 1,
     limit: 20,
     totalPages: 1,

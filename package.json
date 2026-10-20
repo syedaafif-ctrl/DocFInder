@@ -4,10 +4,13 @@
   "private": true,
   "description": "DocFinder BD — Healthcare Discovery & Doctor Appointment Platform",
   "scripts": {
+    "dev": "npm run dev:web --prefix \"Structure Files\"",
+    "dev:web": "npm run dev:web --prefix \"Structure Files\"",
+    "dev:api": "npm run dev:api --prefix \"Structure Files\"",
+    "dev:all": "npm run dev --prefix \"Structure Files\"",
     "build": "npm run build:web --prefix \"Structure Files\"",
     "build:web": "npm run build:web --prefix \"Structure Files\"",
     "build:api": "npm run build:api --prefix \"Structure Files\"",
-    "dev": "npm run dev --prefix \"Structure Files\"",
     "db:push": "npm run db:push --prefix \"Structure Files\"",
     "db:seed": "npm run db:seed --prefix \"Structure Files\""
   }
