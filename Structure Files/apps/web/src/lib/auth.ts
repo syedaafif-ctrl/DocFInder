@@ -240,6 +240,31 @@ export interface CreateAppointmentPayload {
   notes?: string;
 }
 
+export let DEMO_USER_APPOINTMENTS: any[] = [
+  {
+    id: 'apt-my-01',
+    appointmentNumber: 'APT-839201',
+    appointmentDate: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+    slotTime: '17:30',
+    status: 'PENDING',
+    totalAmount: 1500,
+    patientName: 'Ruhul Amin',
+    doctor: { id: 'doc-001', name: 'Prof. Dr. Aminul Islam', slug: 'dr-aminul-islam', title: 'Prof. Dr.' },
+    chamber: { name: 'Square Hospital OPD Chamber (Room 304)', address: 'Panthapath, Dhaka' },
+  },
+  {
+    id: 'apt-my-02',
+    appointmentNumber: 'APT-839203',
+    appointmentDate: new Date().toISOString().split('T')[0],
+    slotTime: '17:00',
+    status: 'CONFIRMED',
+    totalAmount: 1500,
+    patientName: 'Kazi Farhan',
+    doctor: { id: 'doc-ev-01', name: 'Prof. Dr. Shahabuddin Talukder', slug: 'dr-shahabuddin-talukder', title: 'Prof. Dr.' },
+    chamber: { name: 'Evercare Hospital Dhaka (Chamber 408)', address: 'Bashundhara, Dhaka' },
+  },
+];
+
 export async function getDoctorSlotsApi(doctorId: string, date: string, chamberId?: string, hospitalId?: string) {
   try {
     const url = new URL(API_BASE + '/appointments/doctor/' + doctorId + '/slots');
@@ -248,18 +273,44 @@ export async function getDoctorSlotsApi(doctorId: string, date: string, chamberI
     if (hospitalId) url.searchParams.set('hospitalId', hospitalId);
 
     const res = await fetch(url.toString());
-    const data = await res.json();
-    if (res.ok) return data;
+    if (res.ok) {
+      const data = await res.json();
+      if (data && Array.isArray(data.slots)) return data;
+      if (data && Array.isArray(data.availableSlots)) {
+        return {
+          available: true,
+          date,
+          day: new Date(date).toLocaleDateString('en-US', { weekday: 'long' }),
+          slots: data.availableSlots.map((t: string) => ({
+            time: t,
+            isBooked: (data.bookedSlots || []).includes(t),
+          })),
+          totalSlots: data.totalSlots || data.availableSlots.length,
+          bookedCount: (data.bookedSlots || []).length,
+          availableCount: data.availableSlots.length,
+        };
+      }
+    }
   } catch (err) {
     // Network / backend offline
   }
 
-  // Realistic mock slots for standalone Netlify preview
+  // Realistic mock slots formatted for BookingModal
+  const times = ['09:30', '10:00', '10:30', '11:00', '11:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30'];
+  const booked = ['10:00', '16:30'];
+  const dayName = new Date(date).toLocaleDateString('en-US', { weekday: 'long' });
+
   return {
     date,
-    availableSlots: ['09:30', '10:00', '10:30', '11:00', '11:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30'],
-    totalSlots: 15,
-    bookedSlots: ['10:00', '16:30'],
+    available: true,
+    day: dayName,
+    slots: times.map((t) => ({
+      time: t,
+      isBooked: booked.includes(t),
+    })),
+    totalSlots: times.length,
+    bookedCount: booked.length,
+    availableCount: times.length - booked.length,
   };
 }
 
@@ -274,14 +325,19 @@ export async function bookAppointmentApi(payload: CreateAppointmentPayload, toke
       body: JSON.stringify(payload),
     });
 
-    const data = await res.json();
-    if (res.ok) return data;
+    if (res.ok) {
+      const data = await res.json();
+      if (data) {
+        DEMO_USER_APPOINTMENTS.unshift(data);
+        return data;
+      }
+    }
   } catch (err) {
     // Fallback on network failure
   }
 
   const appointmentNumber = 'APT-' + Math.floor(100000 + Math.random() * 900000);
-  return {
+  const newAppt = {
     id: 'apt-demo-' + Date.now(),
     appointmentNumber,
     appointmentDate: payload.appointmentDate,
@@ -292,9 +348,19 @@ export async function bookAppointmentApi(payload: CreateAppointmentPayload, toke
     totalAmount: 1200,
     paymentStatus: 'PAID',
     createdAt: new Date().toISOString(),
+    doctor: {
+      id: payload.doctorId,
+      name: 'Consultant Specialist',
+      slug: payload.doctorId,
+    },
+    chamber: {
+      name: 'Main Practice Chamber',
+    },
   };
-}
 
+  DEMO_USER_APPOINTMENTS.unshift(newAppt);
+  return newAppt;
+}
 
 export async function getMyAppointmentsApi(token: string, status?: string) {
   try {
@@ -307,32 +373,23 @@ export async function getMyAppointmentsApi(token: string, status?: string) {
       },
     });
 
-    const data = await res.json();
-    if (res.ok) return data;
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data)) return { data, total: data.length };
+      if (data && Array.isArray(data.data)) return data;
+    }
   } catch (err) {}
 
-  return [
-    {
-      id: 'apt-my-01',
-      appointmentNumber: 'APT-839201',
-      appointmentDate: new Date(Date.now() + 86400000).toISOString().split('T')[0],
-      slotTime: '17:30',
-      status: 'PENDING',
-      totalAmount: 1500,
-      doctor: { id: 'doc-001', name: 'Prof. Dr. Aminul Islam', slug: 'dr-aminul-islam' },
-      chamber: { name: 'Square Hospital OPD Chamber (Room 304)' },
-    },
-    {
-      id: 'apt-my-02',
-      appointmentNumber: 'APT-839203',
-      appointmentDate: new Date().toISOString().split('T')[0],
-      slotTime: '17:00',
-      status: 'CONFIRMED',
-      totalAmount: 1500,
-      doctor: { id: 'doc-ev-01', name: 'Prof. Dr. Shahabuddin Talukder', slug: 'dr-shahabuddin-talukder' },
-      chamber: { name: 'Evercare Hospital Dhaka (Chamber 408)' },
-    },
-  ];
+  let filtered = DEMO_USER_APPOINTMENTS;
+  if (status) filtered = filtered.filter((a) => a.status === status);
+
+  return {
+    data: filtered,
+    total: filtered.length,
+    page: 1,
+    limit: 20,
+    totalPages: 1,
+  };
 }
 
 export async function cancelAppointmentApi(id: string, reason: string, token: string) {
