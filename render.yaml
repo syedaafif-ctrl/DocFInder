@@ -1,9 +1,9 @@
-﻿services:
+services:
   - type: web
     name: docfinder-api
     runtime: node
     rootDir: Structure Files
-    buildCommand: npm install && cd packages/db && npx prisma generate && cd ../.. && npm run build:api
+    buildCommand: npm install --include=dev && cd packages/db && npx prisma generate && cd ../.. && npm run build:api
     startCommand: node apps/api/dist/main.js
     plan: free
     healthCheckPath: /api/v1/health

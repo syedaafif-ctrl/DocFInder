@@ -14,7 +14,7 @@
     "dev:api": "turbo run dev --filter=api",
     "build": "turbo run build",
     "build:web": "turbo run build --filter=web",
-    "build:api": "turbo run build --filter=api",
+    "build:api": "npm run build --prefix apps/api",
     "test": "turbo run test",
     "lint": "turbo run lint",
     "type-check": "turbo run type-check",
@@ -40,9 +40,7 @@
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "eslint": "^8.57.0",
-    "prettier": "^3.3.0",
-    "turbo": "^2.0.6",
-    "typescript": "^5.9.3"
+    "prettier": "^3.3.0"
   },
 
   "engines": {
@@ -53,6 +51,8 @@
     "@prisma/client": "^5.22.0",
     "bcrypt": "^6.0.0",
     "prisma": "^5.22.0",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "turbo": "^2.0.6",
+    "typescript": "^5.5.0"
   }
 }
