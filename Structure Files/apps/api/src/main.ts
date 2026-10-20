@@ -8,10 +8,26 @@ import compression from 'compression';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
+  const allowedOriginsEnv = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',').map((o) => o.trim())
+    : ['http://localhost:3000', 'http://127.0.0.1:3000'];
+
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'warn', 'log'],
     cors: {
-      origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
+      origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+        if (
+          allowedOriginsEnv.includes('*') ||
+          allowedOriginsEnv.includes(origin) ||
+          origin.includes('localhost') ||
+          origin.includes('127.0.0.1') ||
+          origin.endsWith('.netlify.app')
+        ) {
+          return callback(null, true);
+        }
+        return callback(null, true);
+      },
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-ID'],
       credentials: true,
@@ -77,7 +93,7 @@ async function bootstrap() {
   }
 
   const port = configService.get<number>('app.port') || 4000;
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
 
   console.log(`
   ╔══════════════════════════════════════════╗

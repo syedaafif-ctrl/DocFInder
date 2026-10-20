@@ -20,6 +20,7 @@
     "type-check": "turbo run type-check",
     "format": "prettier --write \"**/*.{ts,tsx,md,json,css}\"",
     "db:generate": "cd packages/db && npx prisma generate",
+    "db:push": "cd packages/db && npx prisma db push",
     "db:migrate": "cd packages/db && npx prisma migrate dev",
     "db:migrate:prod": "cd packages/db && npx prisma migrate deploy",
     "db:seed": "cd packages/db && npx ts-node prisma/seed.ts",
