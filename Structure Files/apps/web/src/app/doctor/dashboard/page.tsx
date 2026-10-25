@@ -163,8 +163,23 @@ function DoctorDashboardContent() {
     try {
       await confirmDoctorAppointmentApi(id, token);
       showFeedback('success', 'Appointment confirmed successfully!');
-      loadAppointments();
-      loadStatsAndChambers();
+      setAppointments((prev) =>
+        activeQueueFilter === 'pending'
+          ? prev.filter((a) => a.id !== id)
+          : prev.map((a) => (a.id === id ? { ...a, status: 'CONFIRMED' } : a))
+      );
+      setStats((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          metrics: {
+            ...prev.metrics,
+            pendingApprovals: Math.max(0, prev.metrics.pendingApprovals - 1),
+            confirmedUpcoming: prev.metrics.confirmedUpcoming + 1,
+          },
+        };
+      });
+      await Promise.all([loadAppointments(), loadStatsAndChambers()]);
     } catch (err: any) {
       showFeedback('error', err.message || 'Failed to confirm appointment');
     } finally {
@@ -180,11 +195,25 @@ function DoctorDashboardContent() {
     try {
       await cancelDoctorAppointmentApi(declineTargetId, declineReason || 'Cancelled by doctor', token);
       showFeedback('success', 'Appointment declined and slot released.');
+      setAppointments((prev) =>
+        activeQueueFilter === 'pending'
+          ? prev.filter((a) => a.id !== declineTargetId)
+          : prev.map((a) => (a.id === declineTargetId ? { ...a, status: 'CANCELLED' } : a))
+      );
+      setStats((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          metrics: {
+            ...prev.metrics,
+            pendingApprovals: Math.max(0, prev.metrics.pendingApprovals - 1),
+          },
+        };
+      });
       setDeclineModalOpen(false);
       setDeclineTargetId(null);
       setDeclineReason('');
-      loadAppointments();
-      loadStatsAndChambers();
+      await Promise.all([loadAppointments(), loadStatsAndChambers()]);
     } catch (err: any) {
       showFeedback('error', err.message || 'Failed to cancel appointment');
     } finally {
@@ -200,11 +229,24 @@ function DoctorDashboardContent() {
     try {
       await completeDoctorAppointmentApi(completeTargetId, consultationNotes || undefined, token);
       showFeedback('success', 'Consultation marked as completed!');
+      setAppointments((prev) =>
+        prev.map((a) => (a.id === completeTargetId ? { ...a, status: 'COMPLETED' } : a))
+      );
+      setStats((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          metrics: {
+            ...prev.metrics,
+            confirmedUpcoming: Math.max(0, prev.metrics.confirmedUpcoming - 1),
+            completedConsultations: prev.metrics.completedConsultations + 1,
+          },
+        };
+      });
       setCompleteModalOpen(false);
       setCompleteTargetId(null);
       setConsultationNotes('');
-      loadAppointments();
-      loadStatsAndChambers();
+      await Promise.all([loadAppointments(), loadStatsAndChambers()]);
     } catch (err: any) {
       showFeedback('error', err.message || 'Failed to complete appointment');
     } finally {

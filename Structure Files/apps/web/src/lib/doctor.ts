@@ -110,6 +110,11 @@ export async function getDoctorStatsApi(token: string): Promise<DoctorStats> {
     // Network fallback
   }
 
+  const pendingCount = DEMO_DOCTOR_APPOINTMENTS.filter((a) => a.status === 'PENDING').length;
+  const confirmedCount = DEMO_DOCTOR_APPOINTMENTS.filter((a) => a.status === 'CONFIRMED').length;
+  const completedCount = DEMO_DOCTOR_APPOINTMENTS.filter((a) => a.status === 'COMPLETED').length;
+  const totalCount = DEMO_DOCTOR_APPOINTMENTS.length;
+
   return {
     doctor: {
       id: 'doc-001',
@@ -124,13 +129,13 @@ export async function getDoctorStatsApi(token: string): Promise<DoctorStats> {
       createdAt: new Date().toISOString(),
     },
     metrics: {
-      todayPatients: 8,
-      pendingApprovals: 3,
-      confirmedUpcoming: 14,
-      completedConsultations: 142,
-      totalBookings: 159,
+      todayPatients: confirmedCount,
+      pendingApprovals: pendingCount,
+      confirmedUpcoming: confirmedCount,
+      completedConsultations: completedCount,
+      totalBookings: totalCount,
       totalChambers: 2,
-      earnedRevenue: 213000,
+      earnedRevenue: completedCount * 1500,
     },
   };
 }
@@ -301,7 +306,13 @@ export async function getDoctorAppointmentsApi(
   }
 
   let filtered = DEMO_DOCTOR_APPOINTMENTS;
-  if (params?.status) filtered = filtered.filter((a) => a.status === params.status);
+  if (params?.status) {
+    filtered = filtered.filter((a) => a.status === params.status);
+  } else if (params?.dateScope === 'upcoming') {
+    filtered = filtered.filter((a) => a.status === 'CONFIRMED');
+  } else if (params?.dateScope === 'today') {
+    filtered = filtered.filter((a) => a.status === 'CONFIRMED' || a.status === 'PENDING');
+  }
   if (params?.chamberId) filtered = filtered.filter((a) => a.chamber?.id === params.chamberId);
   if (params?.search) {
     const q = params.search.toLowerCase();
@@ -317,6 +328,19 @@ export async function getDoctorAppointmentsApi(
   };
 }
 
+function syncDemoAppointmentStatus(
+  id: string,
+  newStatus: 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED',
+  notes?: string
+) {
+  // Update in-memory array
+  const appt = DEMO_DOCTOR_APPOINTMENTS.find((a) => a.id === id || a.appointmentNumber === id);
+  if (appt) {
+    appt.status = newStatus;
+    if (notes) appt.consultationNotes = notes;
+  }
+}
+
 export async function confirmDoctorAppointmentApi(id: string, token: string) {
   try {
     const res = await fetch(`${API_BASE}/appointments/${id}/confirm`, {
@@ -325,13 +349,11 @@ export async function confirmDoctorAppointmentApi(id: string, token: string) {
     });
     const data = await res.json();
     if (res.ok) {
-      const appt = DEMO_DOCTOR_APPOINTMENTS.find((a) => a.id === id);
-      if (appt) appt.status = 'CONFIRMED';
+      syncDemoAppointmentStatus(id, 'CONFIRMED');
       return data;
     }
   } catch (err) {}
-  const appt = DEMO_DOCTOR_APPOINTMENTS.find((a) => a.id === id);
-  if (appt) appt.status = 'CONFIRMED';
+  syncDemoAppointmentStatus(id, 'CONFIRMED');
   return { success: true, message: 'Appointment confirmed successfully' };
 }
 
@@ -347,13 +369,11 @@ export async function cancelDoctorAppointmentApi(id: string, reason: string, tok
     });
     const data = await res.json();
     if (res.ok) {
-      const appt = DEMO_DOCTOR_APPOINTMENTS.find((a) => a.id === id);
-      if (appt) appt.status = 'CANCELLED';
+      syncDemoAppointmentStatus(id, 'CANCELLED');
       return data;
     }
   } catch (err) {}
-  const appt = DEMO_DOCTOR_APPOINTMENTS.find((a) => a.id === id);
-  if (appt) appt.status = 'CANCELLED';
+  syncDemoAppointmentStatus(id, 'CANCELLED');
   return { success: true, message: 'Appointment cancelled successfully' };
 }
 
@@ -369,19 +389,11 @@ export async function completeDoctorAppointmentApi(id: string, notes: string | u
     });
     const data = await res.json();
     if (res.ok) {
-      const appt = DEMO_DOCTOR_APPOINTMENTS.find((a) => a.id === id);
-      if (appt) {
-        appt.status = 'COMPLETED';
-        if (notes) appt.consultationNotes = notes;
-      }
+      syncDemoAppointmentStatus(id, 'COMPLETED', notes);
       return data;
     }
   } catch (err) {}
-  const appt = DEMO_DOCTOR_APPOINTMENTS.find((a) => a.id === id);
-  if (appt) {
-    appt.status = 'COMPLETED';
-    if (notes) appt.consultationNotes = notes;
-  }
+  syncDemoAppointmentStatus(id, 'COMPLETED', notes);
   return { success: true, message: 'Appointment marked completed successfully' };
 }
 
